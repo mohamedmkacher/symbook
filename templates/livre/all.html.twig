@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des livres{% endblock %}
+
+{% block body %}
+
+    <h1>Liste des livres</h1>
+
+
+    <table class=" table table-hover">
+        <thead class="table-primary">
+        <tr class="">
+            <th>Id</th>
+            <th>Image</th>
+            <th>Titre</th>
+
+            <th>ISBN</th>
+
+            <th>Editeur</th>
+            <th>Prix</th>
+
+            <th class="text-center">Voir détail</th>
+            <th class="text-center">Supprimer</th>
+            <th class="text-center">Augmenter prix</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for livre in livres %}
+            <tr class="align-middle">
+                <td>
+                    {{ livre.id }}
+                </td>
+                <td>
+                    <img class="img-thumbnail" style="width: 100px" src="{{ livre.image }}" alt="image du livre">
+                </td>
+                <td>
+                    {{ livre.titre }}
+                </td>
+                <td>
+                    {{ livre.isbn }}
+                </td>
+
+                <td>
+                    {{ livre.editeur }}
+                </td>
+                <td>
+                    {{ livre.prix }}
+                </td>
+                <td class="text-center"><a href="{{ path('app_livre_show',{'id': livre.id}) }}" ><i class="fas fa-eye"></i></a></td>
+                <td class="text-center"><a href="{{ path('app_livre_delete',{'id': livre.id}) }}" ><i class="fas fa-trash-alt text-danger"></i></a></td>
+                <td class="text-center"><a href="{{ path('app_livre_update',{'id': livre.id}) }}"><i class="fas fa-chart-line text-primary"></i></a></td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

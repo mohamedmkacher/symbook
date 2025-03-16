@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+
+
+    <h1 class="mb-2">Détail livre</h1>
+    <div class="row mb-4">
+
+        <div class="col-md-6 text-center">
+            <div class="card shadow-sm">
+                <img src="{{ livre.image }}" alt="Image du livre" class="img-fluid rounded">
+            </div>
+        </div>
+
+
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <h3 class="text-primary mb-3">
+                    {{ livre.titre }}
+                    <span class="text-secondary fst-italic">{{ livre.slug }}</span>
+                </h3>
+
+                <h4 class="text-info ">Edition : {{ livre.editeur }} | {{ livre.dateEdition|date('d/m/Y') }}</h4>
+                <h5>ISBN : {{ livre.isbn }}</h5>
+                <h5>
+                    {{ livre.prix }} Dt
+
+                </h5>
+
+                <p class="text-muted text-justify mb-4">{{ livre.resume }}</p>
+
+                <div class="d-flex align-items-center">
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+{% block title %}
+    {{ livre.titre }}
+{% endblock %}
+
