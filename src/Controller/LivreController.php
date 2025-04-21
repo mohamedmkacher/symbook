@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Livres;
+use App\Form\LivreType;
 use App\Repository\LivresRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -24,21 +25,19 @@ final class LivreController extends AbstractController
         ]);
     }
 
-    #[Route('admin/livre/create', name: 'app_admin_livre_create')]
-    public function create(EntityManagerInterface $entityManager): Response
+    #[Route('admin/livre/add', name: 'app_admin_livre_add')]
+    public function add(EntityManagerInterface $entityManager ,Request $request): Response
     {
         $livre = new Livres();
-        $livre->setImage("https://picsum.photos/200/?id=4")
-            ->setIsbn("456-852-741-963")
-            ->setTitre("Titre 1")
-            ->setSlug("titre-1")
-            ->setEditeur("Editeur 1")
-            ->setResume("Resume 1")
-            ->setPrix(35.5)
-            ->setDateEdition(new \DateTime("2023-02-02"));
-        $entityManager->persist($livre);
-        $entityManager->flush();
-        return $this->redirectToRoute('app_livre');
+        $form = $this->createForm(LivreType::class, $livre);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($livre);
+            $entityManager->flush();
+            $this->addFlash('success', 'Ajout du livre avec succès');
+            return $this->redirectToRoute('app_admin_livre_all');
+        }
+        return $this->render('livre/add.html.twig', ['form' => $form]);
 
     }
 
@@ -112,7 +111,7 @@ final class LivreController extends AbstractController
 
     /*
         #[Route('/livre/delete/{id}', name: 'app_livre_delete')]
-        public function delete( EntityManagerInterface $entityManager,Livres $livre): Response
+        public function delete( EntityManagerInterface $entityManager,livres $livre): Response
         {
 
             $entityManager->remove($livre);
