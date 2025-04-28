@@ -1,5 +1,9 @@
 doctrine:
     dbal:
+        types:
+            user_role: App\Doctrine\Type\UserRoleType
+            etat_panier : App\Doctrine\Type\EtatPanierType
+
         url: '%env(resolve:DATABASE_URL)%'
 
         # IMPORTANT: You MUST configure your server version,

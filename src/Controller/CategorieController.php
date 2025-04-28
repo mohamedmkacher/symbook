@@ -13,13 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class CategorieController extends AbstractController
 {
-    #[Route('/categorie', name: 'app_categorie')]
-    public function index(): Response
-    {
-        return $this->render('categorie/index.html.twig', [
-            'controller_name' => 'CategorieController',
-        ]);
-    }
+
 
     #[Route('/admin/categorie/all', name: 'app_admin_categorie_all')]
     public function all(CategoriesRepository $categoriesRepository): Response
@@ -55,12 +49,25 @@ final class CategorieController extends AbstractController
         $form = $this->createForm(CategorieType::class, $categorie);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-
             $entityManager->flush();
             $this->addFlash('success', 'Mise à jour de la catégorie avec succès');
             return $this->redirectToRoute('app_admin_categorie_all');
         }
         return $this->render('categorie/update.html.twig', ['form' => $form]);
+
+
+    }
+
+    #[Route('/admin/categorie/delete/{id}', name: 'app_admin_categorie_delete')]
+    public function delete(EntityManagerInterface $entityManager, Categories $categorie): Response
+    {
+       $entityManager->remove($categorie);
+       $entityManager->flush();
+
+        $this->addFlash('success', 'Supression de la catégorie avec succès');
+
+
+        return $this->redirectToRoute('app_admin_categorie_all');
 
 
     }

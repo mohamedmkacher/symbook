@@ -28,7 +28,7 @@ class LivreType extends AbstractType
             ->add('categorie', EntityType::class, [
                 'class' => Categories::class,
                 'choice_label' => 'libelle',
-            ])->add('Sauvgarder', SubmitType::class);
+            ]);//->add('Sauvgarder', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

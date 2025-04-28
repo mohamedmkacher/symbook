@@ -8,6 +8,7 @@ use App\Repository\LivresRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -17,16 +18,9 @@ final class LivreController extends AbstractController
 {
     private $exit;
 
-    #[Route('/livre', name: 'app_livre')]
-    public function index(): Response
-    {
-        return $this->render('livre/index.html.twig', [
-            'controller_name' => 'LivreController',
-        ]);
-    }
 
     #[Route('admin/livre/add', name: 'app_admin_livre_add')]
-    public function add(EntityManagerInterface $entityManager ,Request $request): Response
+    public function add(EntityManagerInterface $entityManager, Request $request): Response
     {
         $livre = new Livres();
         $form = $this->createForm(LivreType::class, $livre);
@@ -53,40 +47,6 @@ final class LivreController extends AbstractController
         }
     }
 
-
-    #[Route('admin/livre/show2', name: 'app_admin_livre_show2')]
-    public function show2(LivresRepository $livresRepository): Response
-    {
-        $livre = $livresRepository->findOneBy(['titre' => "Titre 1", 'slug' => "titre-1"]);
-        if (null === $livre) {
-            //throw $this->createNotFoundException("Le livre n'existe pas.");
-            throw new NotFoundHttpException("Le livre n'existe pas.");
-        }
-        dd($livre);
-    }
-
-    #[Route('admin/livre/show3', name: 'app_admin_livre_show3')]
-    public function show3(LivresRepository $livresRepository): Response
-    {
-        $livres = $livresRepository->findBy(['titre' => "Titre 1"], ['id' => 'DESC']);
-        if (null === $livres) {
-            //throw $this->createNotFoundException("Le livre n'existe pas.");
-            throw new NotFoundHttpException("Le livre n'existe pas.");
-        }
-        dd($livres);
-    }
-
-    #[Route('admin/livre/show4/{id}', name: 'app_admin_livre_show4')]
-    public function show4(Livres $livre): Response
-    {
-
-        if (null === $livre) {
-            //throw $this->createNotFoundException("Le livre n'existe pas.");
-            throw new NotFoundHttpException("Le livre n'existe pas.");
-        }
-        dd($livre);
-    }
-
     #[Route('admin/livre/all', name: 'app_admin_livre_all')]
     public function all(LivresRepository $livresRepository, PaginatorInterface $paginator, Request $request): Response
     {
@@ -101,35 +61,40 @@ final class LivreController extends AbstractController
     }
 
     #[Route('admin/livre/delete/{id}', name: 'app_admin_livre_delete')]
-    public function delete(LivresRepository $livresRepository, EntityManagerInterface $entityManager, $id)
+    public function delete(LivresRepository $livresRepository, EntityManagerInterface $entityManager, $id): RedirectResponse
     {
         $livre = $livresRepository->find($id);
         $entityManager->remove($livre);
         $entityManager->flush();
+        $this->addFlash('success', 'Supression du livre avec succès');
+
+
         return $this->redirectToRoute('app_admin_livre_all');
     }
 
-    /*
-        #[Route('/livre/delete/{id}', name: 'app_livre_delete')]
-        public function delete( EntityManagerInterface $entityManager,livres $livre): Response
-        {
-
-            $entityManager->remove($livre);
-            $entityManager->flush();
-
-        }
-    */
+    #[Route('admin/livre/categorie/{id}', name: 'app_admin_livre_all_categorie')]
+    public function allByCat(LivresRepository $livresRepository, PaginatorInterface $paginator, Request $request, $id): Response
+    {
+        $livres = $paginator->paginate(
+            $livresRepository->findBy(["categorie" => $id]),
+            $request->query->getInt('page', 1),
+            10
+        );
+        return $this->render('livre/all.html.twig', ['livres' => $livres]);
+    }
 
     #[Route('admin/livre/update/{id}', name: 'app_admin_livre_update')]
-    public function update(LivresRepository $livresRepository, EntityManagerInterface $entityManager, $id)
+    public function update(LivresRepository $livresRepository, EntityManagerInterface $entityManager, Livres $livre, Request $request): RedirectResponse|Response
     {
-        $livre = $livresRepository->find($id);
+        $form = $this->createForm(LivreType::class, $livre);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
 
-        $livre->setPrix($livre->getPrix() * 1.1);
-        $entityManager->persist($livre);
-        $entityManager->flush();
-
-        return $this->redirectToRoute('app_admin_livre_all');
+            $entityManager->flush();
+            $this->addFlash('success', 'Mise à jour du livre avec succès');
+            return $this->redirectToRoute('app_admin_livre_all');
+        }
+        return $this->render('livre/update.html.twig', ['form' => $form]);
 
 
     }

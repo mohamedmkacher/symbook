@@ -1,74 +1,135 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/base.html.twig' %}
 
 {% block title %}Liste des livres{% endblock %}
-{% block scripts %}
 
-
-
-    {{ knp_pagination_rel_links(livres) }}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .book-table {
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .book-table th {
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        .book-image {
+            width: 80px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .action-icon {
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+        }
+        .action-icon:hover {
+            transform: scale(1.2);
+        }
+        .add-btn {
+            transition: all 0.3s ease;
+        }
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(13, 110, 253, 0.05);
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
+    <div class="container-fluid py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-book-open me-2"></i>Liste des livres
+            </h1>
+            <a href="{{ path('app_admin_livre_add') }}" class="btn btn-primary add-btn">
+                <i class="fas fa-plus-circle me-2"></i>Ajouter un livre
+            </a>
+        </div>
 
-    <h1>Liste des livres</h1>
-    <div class="d-flex justify-content-end">
-        <a href="{{ path('app_admin_livre_add') }}" class="btn btn-primary">Ajouter un livre</a>
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover book-table">
+                        <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Titre</th>
+                            <th>Catégorie</th>
+                            <th>ISBN</th>
+                            <th>Éditeur</th>
+                            <th>Prix</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for livre in livres %}
+                            <tr class="align-middle">
+                                <td class="fw-semibold">{{ livre.id }}</td>
+                                <td>
+                                    <img class="book-image img-thumbnail" src="{{ livre.image }}" alt="Couverture du livre {{ livre.titre }}">
+                                </td>
+                                <td class="fw-semibold">{{ livre.titre }}</td>
+                                <td>
+                                    <span class="badge bg-info text-light">{{ livre.categorie.libelle }}</span>
+                                </td>
+                                <td><code>{{ livre.isbn }}</code></td>
+                                <td>{{ livre.editeur }}</td>
+                                <td class="fw-bold text-success">{{ livre.prix|number_format(2, ',', ' ') }} Dt</td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-3">
+                                        <a href="{{ path('app_admin_livre_show', {'id': livre.id}) }}"
+                                           class="text-primary"
+                                           title="Voir détails"
+                                           data-bs-toggle="tooltip">
+                                            <i class="fas fa-info-circle action-icon"></i>
+                                        </a>
+                                        <a href="{{ path('app_admin_livre_update', {'id': livre.id}) }}"
+                                           class="text-warning"
+                                           title="Modifier"
+                                           data-bs-toggle="tooltip">
+                                            <i class="fas fa-edit action-icon"></i>
+                                        </a>
+                                        <a href="{{ path('app_admin_livre_delete', {'id': livre.id}) }}"
+                                           class="text-danger"
+                                           title="Supprimer"
+                                           data-bs-toggle="tooltip"
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')">
+                                            <i class="fas fa-trash-alt action-icon"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <div class="text-muted">
+                        Affichage de <strong>{{ livres|length }}</strong> livre(s) sur <strong>{{ livres.getTotalItemCount }}</strong>
+                    </div>
+                    <div class="pagination justify-content-center">
+                        {{ knp_pagination_render(livres, '@KnpPaginator/Pagination/pagination.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+{% endblock %}
 
-
-
-    <table class="mt-3 table table-hover">
-        <thead class="table-primary">
-        <tr class="">
-            <th>Id</th>
-            <th>Image</th>
-            <th>Titre</th>
-            <th>Categorie</th>
-
-            <th>ISBN</th>
-
-            <th>Editeur</th>
-            <th>Prix</th>
-
-            <th class="text-center">Voir détail</th>
-            <th class="text-center">Supprimer</th>
-            <th class="text-center">Modifier</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for livre in livres %}
-            <tr class="align-middle">
-                <td>
-                    {{ livre.id }}
-                </td>
-                <td>
-                    <img class="img-thumbnail" style="width: 100px" src="{{ livre.image }}" alt="image du livre">
-                </td>
-                <td>
-                    {{ livre.titre }}
-                </td><td>
-                    {{ livre.categorie.libelle }}
-                </td>
-                <td>
-                    {{ livre.isbn }}
-                </td>
-
-                <td>
-                    {{ livre.editeur }}
-                </td>
-                <td>
-                    {{ livre.prix }}
-                </td>
-                <td class="text-center"><a href="{{ path('app_admin_livre_show',{'id': livre.id}) }}" ><i class="fas fa-eye"></i></a></td>
-                <td class="text-center"><a href="{{ path('app_admin_livre_delete',{'id': livre.id}) }}" ><i class="fas fa-trash-alt text-danger"></i></a></td>
-                <td class="text-center"><a href="{{ path('app_admin_livre_update',{'id': livre.id}) }}"><i class="fas fa-pen text-primary"></i></a></td>
-            </tr>
-
-        {% endfor %}
-        </tbody>
-    </table>
-    <div class="pagination justify-content-center">
-        {{ knp_pagination_render(livres) }}
-    </div>
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Enable Bootstrap tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
 {% endblock %}

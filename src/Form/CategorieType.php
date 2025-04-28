@@ -18,7 +18,7 @@ class CategorieType extends AbstractType
             ->add('libelle',TextType::class,['label' => 'Libellé : '])
             ->add('slug',TextType::class,['label' => 'Slug : '])
             ->add('description',TextareaType::class,['label' => 'Description : ','required' => false])
-            ->add('Sauvgarder',SubmitType::class )
+
         ;
     }
 

@@ -1,0 +1,181 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Tableau de bord Admin | Symbook{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .dashboard-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            height: 100%;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .recent-activity-item {
+            border-left: 3px solid #4e73df;
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Tableau de bord</h1>
+
+        </div>
+
+        <!-- Content Row -->
+        <div class="row">
+            <!-- Books Card -->
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card dashboard-card border-left-primary py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Livres</div>
+                                <div class="stat-number mb-0 font-weight-bold text-gray-800">{{ book_count }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-book card-icon text-primary"></i>
+                            </div>
+                        </div>
+                        <a href="{{ path('app_admin_livre_all') }}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Card -->
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card dashboard-card border-left-success py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Catégories</div>
+                                <div class="stat-number mb-0 font-weight-bold text-gray-800">{{ category_count }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-tags card-icon text-success"></i>
+                            </div>
+                        </div>
+                        <a href="{{ path('app_admin_categorie_all') }}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Card -->
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card dashboard-card border-left-warning py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Revenu (Mois)</div>
+                                <div class="stat-number mb-0 font-weight-bold text-gray-800"> {{ monthly_revenue|number_format(3, ',', ' ') }} TND</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-chart-simple card-icon text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Row -->
+        <div class="row">
+            <!-- Recent Books -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Livres récemment ajoutés</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Date d'ajout</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for book in recent_books %}
+                                    <tr>
+                                        <td>{{ book.titre }}</td>
+                                        <td>{{ book.dateEdition|date('d/m/Y') }}</td>
+                                        <td>
+                                            <a href="{{ path('app_admin_livre_show', {'id': book.id}) }}"
+                                               class="btn btn-sm btn-info"
+                                               data-bs-toggle="tooltip"
+                                               title="Voir détails">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Activité récente</h6>
+                    </div>
+                    <div class="card-body">
+                        {% for activity in recent_activity %}
+                            <div class="recent-activity-item">
+                                <div class="small text-gray-500">{{ activity.date|date('d/m/Y H:i') }}</div>
+                                {{ activity.action }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Actions rapides</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <a href="{{ path('app_admin_livre_add') }}" class="btn btn-primary m-2">
+                            <i class="fas fa-plus-circle"></i> Ajouter un livre
+                        </a>
+                        <a href="{{ path('app_admin_categorie_add') }}" class="btn btn-success m-2">
+                            <i class="fas fa-tag"></i> Ajouter une catégorie
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
