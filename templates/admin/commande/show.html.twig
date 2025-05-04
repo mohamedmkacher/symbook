@@ -1,0 +1,94 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Commande #{{ commande.id }}{% endblock %}
+
+{% block admin_body %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="fas fa-shopping-cart me-2"></i>
+            Commande #{{ commande.id }}
+            <span class="badge bg-{{ commande.panier.etatPanier == 'VALIDE' ? 'success' : 'warning' }} ms-2">
+                {{ commande.panier.etatPanier == 'VALIDE' ? 'Expédiée' : 'En traitement' }}
+            </span>
+        </h1>
+        <div>
+            <a href="{{ path('app_admin_commande_index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Retour
+            </a>
+            {% if commande.panier.etatPanier != 'VALIDE' %}
+                <form method="post" action="{{ path('app_admin_commande_mark_shipped', {'id': commande.id}) }}" class="d-inline ms-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-truck me-1"></i> Marquer comme expédiée
+                    </button>
+                </form>
+            {% endif %}
+            <form method="post" action="{{ path('app_admin_commande_delete', {'id': commande.id}) }}"
+                  class="d-inline ms-2" onsubmit="return confirm('Supprimer cette commande ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ commande.id) }}">
+                <button class="btn btn-danger">
+                    <i class="fas fa-trash me-1"></i> Supprimer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-info-circle me-2"></i> Détails de la commande
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Date</dt>
+                        <dd class="col-sm-8">{{ commande.date|date('d/m/Y H:i') }}</dd>
+
+                        <dt class="col-sm-4">Client</dt>
+                        <dd class="col-sm-8">{{ commande.panier.user.email }}</dd>
+
+                        <dt class="col-sm-4">Total</dt>
+                        <dd class="col-sm-8">{{ commande.total|format_currency('EUR') }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-book me-2"></i> Articles commandés
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Livre</th>
+                                <th>Prix unitaire</th>
+                                <th>Quantité</th>
+                                <th>Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for ligne in commande.panier.lignesPanier %}
+                                <tr>
+                                    <td>{{ ligne.livre.titre }}</td>
+                                    <td>{{ ligne.livre.prix|format_currency('EUR') }}</td>
+                                    <td>{{ ligne.qte }}</td>
+                                    <td>{{ (ligne.livre.prix * ligne.qte)|format_currency('EUR') }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th colspan="3">Total commande</th>
+                                <th>{{ commande.total|format_currency('EUR') }}</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

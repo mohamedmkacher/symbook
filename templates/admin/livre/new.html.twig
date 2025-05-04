@@ -1,4 +1,4 @@
-{% extends 'admin/base.html.twig' %}
+{% extends 'admin/base_admin.html.twig' %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -49,11 +49,11 @@
     </style>
 {% endblock %}
 
-{% block body %}
+{% block admin_body %}
     <div class="container-fluid">
         <div class="form-container">
             <h1 class="form-title">
-                <i class="fas fa-book me-2"></i>Mise à jour d'un livre
+                <i class="fas fa-book me-2"></i>Ajout d'un nouveau livre
             </h1>
 
             {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
@@ -210,7 +210,7 @@
     </div>
 {% endblock %}
 
-{% block title %}Mise à jour livre | Administration{% endblock %}
+{% block title %}Ajout livre | Administration{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -239,7 +239,7 @@
                 });
             }
 
-            // Slug generation
+
             const titreField = document.getElementById('{{ form.titre.vars.id }}');
             const slugField = document.getElementById('{{ form.slug.vars.id }}');
             const editSlugBtn = document.getElementById('edit-slug');

@@ -1,0 +1,495 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Mise à jour livre | BiblioTech{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Conteneur principal */
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        /* Titre du formulaire */
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--gray-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Groupe de formulaire */
+        .form-group {
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.6s ease forwards;
+        }
+
+        /* Animation décalée pour chaque groupe */
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(5) { animation-delay: 0.5s; }
+        .form-group:nth-child(6) { animation-delay: 0.6s; }
+        .form-group:nth-child(7) { animation-delay: 0.7s; }
+
+        /* Labels */
+        label {
+            color: var(--gray-light);
+            font-weight: 500;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: var(--danger);
+        }
+
+        /* Champs de formulaire */
+        .form-control, .form-select {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border-radius: var(--border-radius);
+            padding: 0.875rem 1.25rem;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
+            background: rgba(30, 41, 59, 0.7);
+        }
+
+        .form-control::placeholder {
+            color: var(--gray);
+        }
+
+        /* Champ slug en lecture seule */
+        #book_slug {
+            background: rgba(15, 23, 42, 0.7);
+            color: var(--gray-light);
+        }
+
+        /* Bouton d'édition du slug */
+        .btn-edit-slug {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray-light);
+            transition: var(--transition);
+        }
+
+        .btn-edit-slug:hover {
+            background: var(--primary);
+            color: var(--light);
+            border-color: var(--primary);
+        }
+
+        /* Validation */
+        .is-invalid {
+            border-color: var(--danger) !important;
+        }
+
+        .invalid-feedback {
+            display: none;
+            color: var(--danger);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .was-validated .form-control:invalid ~ .invalid-feedback,
+        .was-validated .form-select:invalid ~ .invalid-feedback {
+            display: block;
+        }
+
+        /* Textarea */
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Input group pour prix */
+        .input-group-text {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray-light);
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        /* Boutons d'action */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition-bounce);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            color: var(--light);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-secondary {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray-light);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(147, 51, 234, 0.1);
+            border-color: var(--primary);
+            color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        /* Form text */
+        .form-text {
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .form-title {
+                font-size: 1.75rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-container {
+                padding: 1rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="form-container">
+        <h1 class="form-title">
+            <i class="fas fa-book me-2"></i>Mise à jour d'un livre
+        </h1>
+
+        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+        <div class="form-group">
+            {{ form_label(form.titre, null, {'label_attr': {'class': 'required-field'}}) }}
+            {{ form_widget(form.titre, {
+                'attr': {
+                    'class': 'form-control',
+                    'data-slug-target': 'source',
+                    'required': 'required'
+                }
+            }) }}
+            {{ form_errors(form.titre) }}
+            <div class="invalid-feedback">Veuillez saisir un titre.</div>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.slug, null, {'label_attr': {'class': 'required-field'}}) }}
+            <div class="input-group">
+                {{ form_widget(form.slug, {
+                    'attr': {
+                        'class': 'form-control',
+                        'data-slug-target': 'output',
+                        'readonly': 'readonly',
+                        'required': 'required'
+                    }
+                }) }}
+                <button class="btn btn-edit-slug" type="button" id="edit-slug">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+            {{ form_errors(form.slug) }}
+            <div class="invalid-feedback">Veuillez vérifier le slug.</div>
+            <small class="form-text">Le slug est généré automatiquement mais peut être modifié</small>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.resume, null, {'label_attr': {'class': 'required-field'}}) }}
+            {{ form_widget(form.resume, {
+                'attr': {
+                    'class': 'form-control',
+                    'rows': 5,
+                    'required': 'required'
+                }
+            }) }}
+            {{ form_errors(form.resume) }}
+            <div class="invalid-feedback">Veuillez saisir un résumé.</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form_label(form.isbn, null, {'label_attr': {'class': 'required-field'}}) }}
+                    {{ form_widget(form.isbn, {
+                        'attr': {
+                            'class': 'form-control',
+                            'required': 'required'
+                        }
+                    }) }}
+                    {{ form_errors(form.isbn) }}
+                    <div class="invalid-feedback">Veuillez saisir un ISBN.</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form_label(form.prix, null, {'label_attr': {'class': 'required-field'}}) }}
+                    <div class="input-group">
+                        {{ form_widget(form.prix, {
+                            'attr': {
+                                'class': 'form-control',
+                                'required': 'required',
+                                'min': '0',
+                                'step': '0.001'
+                            }
+                        }) }}
+                        <span class="input-group-text">TND</span>
+                    </div>
+                    {{ form_errors(form.prix) }}
+                    <div class="invalid-feedback">Veuillez saisir un prix valide (ex: 12.500).</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form_label(form.editeur, null, {'label_attr': {'class': 'required-field'}}) }}
+                    {{ form_widget(form.editeur, {
+                        'attr': {
+                            'class': 'form-control',
+                            'required': 'required'
+                        }
+                    }) }}
+                    {{ form_errors(form.editeur) }}
+                    <div class="invalid-feedback">Veuillez saisir un éditeur.</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form_label(form.dateEdition, null, {'label_attr': {'class': 'required-field'}}) }}
+                    {{ form_widget(form.dateEdition, {
+                        'attr': {
+                            'class': 'form-control',
+                            'required': 'required'
+                        }
+                    }) }}
+                    {{ form_errors(form.dateEdition) }}
+                    <div class="invalid-feedback">Veuillez sélectionner une date.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form_label(form.categorie, null, {'label_attr': {'class': 'required-field'}}) }}
+                    {{ form_widget(form.categorie, {
+                        'attr': {
+                            'class': 'form-select',
+                            'required': 'required'
+                        }
+                    }) }}
+                    {{ form_errors(form.categorie) }}
+                    <div class="invalid-feedback">Veuillez sélectionner une catégorie.</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form_label(form.image, null, {'label_attr': {'class': 'required-field'}}) }}
+                    {{ form_widget(form.image, {
+                        'attr': {
+                            'class': 'form-control',
+                            'required': 'required'
+                        }
+                    }) }}
+                    {{ form_errors(form.image) }}
+                    <div class="invalid-feedback">Veuillez sélectionner une image.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ path('app_admin_livre_all') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Annuler
+            </a>
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+                <i class="fas fa-save me-2"></i>Enregistrer
+            </button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Validation du formulaire
+            const form = document.querySelector('.needs-validation');
+            const submitBtn = document.getElementById('submit-btn');
+
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    form.classList.add('was-validated');
+                }
+            }, false);
+
+            // Formatage du prix à trois décimales
+            const priceField = document.getElementById('{{ form.prix.vars.id }}');
+            if (priceField) {
+                priceField.addEventListener('change', function() {
+                    const value = parseFloat(this.value);
+                    if (!isNaN(value)) {
+                        this.value = value.toFixed(3);
+                    }
+                });
+            }
+
+            // Génération et édition du slug
+            const titreField = document.getElementById('{{ form.titre.vars.id }}');
+            const slugField = document.getElementById('{{ form.slug.vars.id }}');
+            const editSlugBtn = document.getElementById('edit-slug');
+
+            let slugEditable = false;
+
+            function generateSlug(text) {
+                return text
+                    .toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/[\s]+/g, '-')
+                    .replace(/[-]+/g, '-')
+                    .trim();
+            }
+
+            titreField.addEventListener('input', function() {
+                if (!slugEditable) {
+                    slugField.value = generateSlug(this.value);
+                }
+            });
+
+            editSlugBtn.addEventListener('click', function() {
+                slugEditable = !slugEditable;
+                slugField.readOnly = !slugEditable;
+                slugField.style.backgroundColor = slugEditable ? 'rgba(30, 41, 59, 0.7)' : 'rgba(15, 23, 42, 0.7)';
+                this.innerHTML = slugEditable
+                    ? '<i class="fas fa-lock"></i>'
+                    : '<i class="fas fa-edit"></i>';
+            });
+
+            if (titreField.value && !slugField.value) {
+                slugField.value = generateSlug(titreField.value);
+            }
+
+            // Validation des champs requis au clic sur Enregistrer
+            submitBtn.addEventListener('click', function() {
+                let isValid = true;
+                const requiredFields = form.querySelectorAll('[required]');
+
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+
+                if (!isValid) {
+                    form.classList.add('was-validated');
+                    return false;
+                }
+                return true;
+            });
+
+            // Animation des groupes de formulaire lors du défilement
+            const formGroups = document.querySelectorAll('.form-group');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            formGroups.forEach(group => {
+                group.style.opacity = '0';
+                group.style.transform = 'translateY(20px)';
+                group.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(group);
+            });
+        });
+    </script>
+{% endblock %}

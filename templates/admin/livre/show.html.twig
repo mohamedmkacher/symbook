@@ -1,0 +1,376 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}{{ livre.titre }} | Détails | BiblioTech{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Conteneur principal */
+        .content-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem 2.5rem;
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        /* Titre principal */
+        .details-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--gray-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Cartes de détails */
+        .book-details-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.6s ease forwards;
+        }
+
+        .book-details-card.image-card { animation-delay: 0.1s; }
+        .book-details-card.info-card { animation-delay: 0.2s; }
+
+        .book-details-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Image du livre */
+        .book-image {
+            max-height: 400px;
+            object-fit: contain;
+            padding: 2rem;
+            width: 100%;
+            border-radius: var(--border-radius-lg);
+        }
+
+        /* Badge de prix */
+        .price-badge {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: var(--light);
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius-full);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-bounce);
+        }
+
+        .price-badge:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Métadonnées */
+        .meta-item {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: var(--gray-light);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-value {
+            color: var(--light);
+            font-weight: 500;
+        }
+
+        /* Badge de catégorie */
+        .category-badge {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+            color: var(--light);
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--border-radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-bounce);
+        }
+
+        .category-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Résumé */
+        .resume-section h5 {
+            font-family: 'Playfair Display', serif;
+            color: var(--light);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .resume-section p {
+            color: var(--gray-light);
+            line-height: 1.8;
+        }
+
+        /* Boutons d'action */
+        .btn {
+            padding: 0.875rem 1.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition-bounce);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            color: var(--light);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, var(--gold-dark) 100%);
+            border: none;
+            color: var(--light);
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--warning) 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, var(--accent-dark) 100%);
+            border: none;
+            color: var(--light);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--danger) 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-secondary {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray-light);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(147, 51, 234, 0.1);
+            border-color: var(--primary);
+            color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        /* Ligne de séparation */
+        hr {
+            border-color: rgba(255, 255, 255, 0.1);
+            margin: 2rem 0;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .book-details-card {
+                margin-bottom: 1.5rem;
+            }
+
+            .details-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .details-title {
+                font-size: 1.75rem;
+            }
+
+            .book-image {
+                max-height: 300px;
+                padding: 1.5rem;
+            }
+
+            .meta-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .book-image {
+                max-height: 250px;
+                padding: 1rem;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .d-flex.gap-2 {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="content-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="details-title">
+                <i class="fas fa-book-open me-2"></i>Détails du livre
+            </h1>
+            <a href="{{ path('app_admin_livre_all') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+            </a>
+        </div>
+
+        <div class="row">
+            <!-- Book Cover -->
+            <div class="col-lg-4">
+                <div class="book-details-card image-card">
+                    <div class="card-body text-center d-flex flex-column">
+                        <img src="{{ livre.image }}" alt="Couverture de {{ livre.titre }}" class="book-image img-fluid mx-auto">
+                        <div class="mt-auto">
+                            <span class="price-badge rounded-pill">
+                                {{ livre.prix|number_format(3, ',', ' ') }} TND
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Book Details -->
+            <div class="col-lg-8">
+                <div class="book-details-card info-card">
+                    <div class="card-body">
+                        <h2 class="mb-3" style="color: var(--primary-light); font-family: 'Playfair Display', serif;">
+                            {{ livre.titre }}
+                        </h2>
+                        <p class="text-muted fst-italic" style="color: var(--gray);">{{ livre.slug }}</p>
+
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="meta-item">
+                                    <span class="meta-label"><i class="fas fa-building me-2"></i>Éditeur:</span>
+                                    <span class="meta-value">{{ livre.editeur }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label"><i class="fas fa-calendar-alt me-2"></i>Date d'édition:</span>
+                                    <span class="meta-value">{{ livre.dateEdition|date('d/m/Y') }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="meta-item">
+                                    <span class="meta-label"><i class="fas fa-barcode me-2"></i>ISBN:</span>
+                                    <span class="meta-value">{{ livre.isbn }}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label"><i class="fas fa-tag me-2"></i>Catégorie:</span>
+                                    <span class="category-badge">{{ livre.categorie.libelle }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="resume-section">
+                            <h5><i class="fas fa-align-left me-2"></i>Résumé:</h5>
+                            <p>{{ livre.resume }}</p>
+                        </div>
+
+                        <div class="mt-4 d-flex gap-2">
+                            <a href="{{ path('app_admin_livre_update', {'id': livre.id}) }}" class="btn btn-warning">
+                                <i class="fas fa-edit me-2"></i>Modifier
+                            </a>
+                            <a href="{{ path('app_admin_livre_delete', {'id': livre.id}) }}"
+                               class="btn btn-danger"
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')">
+                                <i class="fas fa-trash-alt me-2"></i>Supprimer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation des cartes lors du défilement
+            const cards = document.querySelectorAll('.book-details-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+
+            // Effet de survol sur les cartes
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 4px 8px rgba(147, 51, 234, 0.3)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = 'var(--shadow-lg)';
+                });
+            });
+        });
+    </script>
+{% endblock %}

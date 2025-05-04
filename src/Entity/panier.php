@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PanierRepository::class)]
-class Panier
+class panier
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

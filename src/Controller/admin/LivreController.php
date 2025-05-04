@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\admin;
 
 use App\Entity\Livres;
 use App\Form\LivreType;
@@ -31,7 +31,7 @@ final class LivreController extends AbstractController
             $this->addFlash('success', 'Ajout du livre avec succès');
             return $this->redirectToRoute('app_admin_livre_all');
         }
-        return $this->render('livre/add.html.twig', ['form' => $form]);
+        return $this->render('admin/livre/new.html.twig', ['form' => $form]);
 
     }
 
@@ -43,7 +43,7 @@ final class LivreController extends AbstractController
             //throw $this->createNotFoundException("Le livre n'existe pas.");
             throw new NotFoundHttpException("Le livre n'existe pas.");
         } else {
-            return $this->render('livre/show.html.twig', ['livre' => $livre]);
+            return $this->render('admin/livre/show.html.twig', ['livre' => $livre]);
         }
     }
 
@@ -57,7 +57,7 @@ final class LivreController extends AbstractController
             $request->query->getInt('page', 1), /* page number */
             10 /* limit per page */
         );
-        return $this->render('livre/all.html.twig', ['livres' => $livres]);
+        return $this->render('admin/livre/index.html.twig', ['livres' => $livres]);
     }
 
     #[Route('admin/livre/delete/{id}', name: 'app_admin_livre_delete')]
@@ -80,7 +80,7 @@ final class LivreController extends AbstractController
             $request->query->getInt('page', 1),
             10
         );
-        return $this->render('livre/all.html.twig', ['livres' => $livres]);
+        return $this->render('admin/livre/index.html.twig', ['livres' => $livres]);
     }
 
     #[Route('admin/livre/update/{id}', name: 'app_admin_livre_update')]
@@ -94,7 +94,7 @@ final class LivreController extends AbstractController
             $this->addFlash('success', 'Mise à jour du livre avec succès');
             return $this->redirectToRoute('app_admin_livre_all');
         }
-        return $this->render('livre/update.html.twig', ['form' => $form]);
+        return $this->render('admin/livre/edit.html.twig', ['form' => $form]);
 
 
     }

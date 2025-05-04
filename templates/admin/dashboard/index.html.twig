@@ -1,0 +1,1028 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Tableau de bord | BiblioTech{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Palette de couleurs élégante et sombre */
+            --primary: #9333ea;
+            --primary-dark: #7e22ce;
+            --primary-light: #c084fc;
+            --secondary: #0ea5e9;
+            --secondary-dark: #0284c7;
+            --accent: #f43f5e;
+            --accent-dark: #e11d48;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --dark-soft: #1e293b;
+            --dark-lighter: #334155;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --gray-dark: #475569;
+            --gold: #fbbf24;
+            --gold-dark: #d97706;
+
+            /* Ombres élégantes */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 15px rgba(147, 51, 234, 0.5);
+
+            /* Transitions et animations */
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            /* Bordures et rayons */
+            --border-radius: 0.5rem;
+            --border-radius-lg: 0.75rem;
+            --border-radius-xl: 1rem;
+            --border-radius-full: 9999px;
+        }
+
+        /* Styles globaux */
+        body {
+            background-color: #0f172a;
+            color: var(--light);
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            letter-spacing: -0.02em;
+        }
+
+        /* Navbar élégante avec effet glassmorphism */
+        .admin-navbar {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            height: 42px;
+            width: 42px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow), 0 0 10px rgba(147, 51, 234, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .navbar-logo::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                    rgba(255, 255, 255, 0.2),
+                    rgba(255, 255, 255, 0)
+            );
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+
+        .navbar-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .navbar-subtitle {
+            font-size: 0.75rem;
+            color: var(--gray-light);
+            margin: 0;
+            letter-spacing: 0.5px;
+            font-weight: 300;
+        }
+
+        .navbar-menu {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .navbar-item {
+            position: relative;
+        }
+
+        .navbar-link {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
+        }
+
+        .navbar-link:hover, .navbar-link.active {
+            color: var(--primary-light);
+        }
+
+        .navbar-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: var(--border-radius-full);
+            box-shadow: 0 0 8px rgba(147, 51, 234, 0.5);
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: var(--border-radius-lg);
+            transition: var(--transition);
+        }
+
+        .navbar-user:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius-full);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: var(--shadow), 0 0 10px rgba(147, 51, 234, 0.3);
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .user-info {
+                display: block;
+            }
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--light);
+            margin: 0;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--gray-light);
+            margin: 0;
+        }
+
+        .navbar-dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            background: none;
+            border: none;
+            color: var(--gray-light);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .dropdown-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+        }
+
+        /* Conteneur principal */
+        .content-container {
+            padding: 0 1.5rem 2.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Titre principal */
+        .dashboard-title {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--gray-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            position: relative;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Barre d'outils */
+        .dashboard-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1.75rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius-lg);
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1.25rem 0.875rem 3.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-full);
+            font-size: 0.875rem;
+            transition: var(--transition);
+            background-color: rgba(15, 23, 42, 0.5);
+            color: var(--light);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 1.25rem center;
+            background-size: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
+            background-color: rgba(30, 41, 59, 0.7);
+        }
+
+        .search-input::placeholder {
+            color: var(--gray);
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .filter-select {
+            padding: 0.875rem 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            font-size: 0.875rem;
+            color: var(--gray-light);
+            background-color: rgba(15, 23, 42, 0.5);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            font-family: 'Montserrat', sans-serif;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
+            background-color: rgba(30, 41, 59, 0.7);
+        }
+
+        /* Statistiques */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.6s ease forwards;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--light);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-bounce);
+        }
+
+        .stat-icon.books { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
+        .stat-icon.categories { background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%); }
+        .stat-icon.users { background: linear-gradient(135deg, var(--success) 0%, var(--success) 100%); }
+        .stat-icon.sales { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); }
+
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 4px 8px rgba(147, 51, 234, 0.3);
+        }
+
+        .stat-value {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 2rem;
+            margin: 0;
+            color: var(--light);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-light);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Conteneur de tableau */
+        .table-container {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-bottom: 2.5rem;
+        }
+
+        .table-header {
+            background: rgba(15, 23, 42, 0.9);
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--light);
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            padding: 0.5rem;
+        }
+
+        .dashboard-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .dashboard-table th {
+            position: sticky;
+            top: 0;
+            background-color: rgba(15, 23, 42, 0.9);
+            color: var(--gray-light);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            padding: 1.25rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .dashboard-table td {
+            padding: 1.25rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--gray-light);
+        }
+
+        .dashboard-table tbody tr {
+            transition: var(--transition);
+            background-color: rgba(15, 23, 42, 0.3);
+        }
+
+        .dashboard-table tbody tr:hover {
+            background-color: rgba(147, 51, 234, 0.1);
+            transform: scale(1.01);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dashboard-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-primary-light {
+            color: var(--primary-light);
+            transition: var(--transition);
+        }
+
+        .text-primary-light:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        /* Liste des livres populaires */
+        .popular-books-container {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-bottom: 2.5rem;
+        }
+
+        .popular-books-header {
+            background: rgba(15, 23, 42, 0.9);
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--light);
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .list-group-item {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.25rem 1.5rem;
+            transition: var(--transition);
+            color: var(--light);
+        }
+
+        .list-group-item:hover {
+            background-color: rgba(147, 51, 234, 0.1);
+            transform: translateX(5px);
+        }
+
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .book-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .book-category {
+            font-size: 0.875rem;
+            color: var(--gray);
+            margin: 0;
+        }
+
+        .sales-badge {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--border-radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 2px 4px rgba(147, 51, 234, 0.3);
+            transition: var(--transition-bounce);
+        }
+
+        .list-group-item:hover .sales-badge {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 6px rgba(147, 51, 234, 0.4);
+        }
+
+        /* Placeholder pour graphique */
+        .chart-container {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .chart-header {
+            background: rgba(15, 23, 42, 0.9);
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--light);
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            padding: 5rem;
+            color: var(--gray-light);
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.5));
+            border-radius: var(--border-radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chart-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--gray-light) 0%, var(--gray) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        /* État vide */
+        .empty-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.5));
+            border-radius: var(--border-radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--gray-light) 0%, var(--gray) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--light);
+            margin-bottom: 0.75rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-toolbar {
+                flex-direction: column;
+            }
+
+            .filter-container {
+                width: 100%;
+            }
+
+            .filter-select {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-title {
+                font-size: 1.75rem;
+            }
+
+            .dashboard-table th,
+            .dashboard-table td {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .table-header, .popular-books-header, .chart-header {
+                font-size: 1rem;
+            }
+
+            .navbar-menu {
+                display: none;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block admin_body %}
+    <!-- Navbar Élégante avec Glassmorphism (identique à la page des livres) -->
+    <nav class="admin-navbar">
+        <div class="navbar-container">
+            <a href="{{ path('app_admin_dashboard') }}" class="navbar-brand">
+                <div class="navbar-logo">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div>
+                    <h1 class="navbar-title">BiblioTech</h1>
+                </div>
+            </a>
+
+            <div class="navbar-menu">
+                <div class="navbar-item">
+                    <a href="{{ path('app_admin_dashboard') }}" class="navbar-link active">
+                        <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                    </a>
+                </div>
+                <div class="navbar-item">
+                    <a href="{{ path('app_admin_livre_all') }}" class="navbar-link ">
+                        <i class="fas fa-book-open me-1"></i> Livres
+                    </a>
+                </div>
+                <div class="navbar-item">
+                    <a href="{{ path('app_admin_categorie_all') }}" class="navbar-link">
+                        <i class="fas fa-tags me-1"></i> Catégories
+                    </a>
+                </div>
+                <div class="navbar-item">
+                    <a href="#" class="navbar-link">
+                        <i class="fas fa-users me-1"></i> Utilisateurs
+                    </a>
+                </div>
+                <div class="navbar-item">
+                    <a href="{{ path('app_admin_commande_index') }}" class="navbar-link">
+                        <i class="fas fa-shopping-cart me-1"></i> Commandes
+                    </a>
+                </div>
+            </div>
+
+            <div class="navbar-user">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <p class="user-name">Admin</p>
+                    <p class="user-role">Administrateur</p>
+                </div>
+                <div class="navbar-dropdown">
+                    <button class="dropdown-toggle">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteneur principal -->
+    <div class="content-container fade-in">
+        <h1 class="dashboard-title">
+            <i class="fas fa-tachometer-alt me-2"></i>Tableau de bord
+        </h1>
+
+        <!-- Barre d'outils -->
+        <div class="dashboard-toolbar">
+            <div class="search-container">
+                <input type="text" class="search-input" id="dashboardSearch" placeholder="Rechercher dans les commandes...">
+            </div>
+            <div class="filter-container">
+                <select class="filter-select" id="timeFilter">
+                    <option value="">Toutes les périodes</option>
+                    <option value="today">Aujourd'hui</option>
+                    <option value="week">Cette semaine</option>
+                    <option value="month">Ce mois</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="stats-container mb-5">
+            <div class="stat-card" style="animation-delay: 0.1s;">
+                <div class="stat-icon books">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">{{ stats.total_commandes }}</h3>
+                    <p class="stat-label">Commandes</p>
+                </div>
+            </div>
+
+            <div class="stat-card" style="animation-delay: 0.2s;">
+                <div class="stat-icon categories">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">{{ stats.total_livres }}</h3>
+                    <p class="stat-label">Livres</p>
+                </div>
+            </div>
+
+            <div class="stat-card" style="animation-delay: 0.3s;">
+                <div class="stat-icon users">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">{{ stats.total_clients }}</h3>
+                    <p class="stat-label">Clients</p>
+                </div>
+            </div>
+
+            <div class="stat-card" style="animation-delay: 0.4s;">
+                <div class="stat-icon sales">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value">{{ stats.chiffre_affaires }} DTN</h3>
+                    <p class="stat-label">Chiffre d'affaires</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deux colonnes -->
+        <div class="row">
+            <!-- Dernières commandes -->
+            <div class="col-lg-6 mb-4">
+                <div class="table-container">
+                    <div class="table-header">
+                        <i class="fas fa-clock me-2"></i>Dernières commandes
+                    </div>
+                    <div class="table-responsive">
+                        <table class="dashboard-table" id="ordersTable">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for commande in dernieres_commandes %}
+                                <tr class="slide-in" style="animation-delay: {{ loop.index * 0.05 }}s;">
+                                    <td>
+                                        <a href="{{ path('app_admin_commande_show', {'id': commande.id}) }}" class="text-primary-light">
+                                            #{{ commande.id }}
+                                        </a>
+                                    </td>
+                                    <td>{{ commande.date|date('d/m/Y') }}</td>
+                                    <td>{{ commande.panier.user.email|u.truncate(15, '...') }}</td>
+                                    <td>{{ commande.total|format_currency('EUR') }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="empty-state">
+                                        <div class="empty-state-icon">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </div>
+                                        <div class="empty-state-text">Aucune commande récente</div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Livres populaires -->
+            <div class="col-lg-6 mb-4">
+                <div class="popular-books-container">
+                    <div class="popular-books-header">
+                        <i class="fas fa-star me-2"></i>Livres les plus populaires
+                    </div>
+                    <div class="list-group">
+                        {% for livre in livres_populaires %}
+                            <div class="list-group-item slide-in" style="animation-delay: {{ loop.index * 0.05 }}s;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="book-title">{{ livre.livre.titre }}</h6>
+                                        <small class="book-category">{{ livre.livre.categorie.libelle }}</small>
+                                    </div>
+                                    <span class="sales-badge">{{ livre.ventes }} ventes</span>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="empty-state-text">Pas de données de vente disponibles</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphique (espace réservé) -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <i class="fas fa-chart-line me-2"></i>Activité récente
+            </div>
+            <div class="chart-placeholder">
+                <i class="fas fa-chart-bar"></i>
+                <p>Espace réservé pour le graphique d'activité</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation des stat cards lors du défilement
+            const statCards = document.querySelectorAll('.stat-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            statCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+
+            // Animation des lignes de tableau et éléments de liste
+            const tableRows = document.querySelectorAll('.dashboard-table tbody tr');
+            const listItems = document.querySelectorAll('.list-group-item');
+
+            const animateItems = (items) => {
+                items.forEach(item => {
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateX(-20px)';
+                    item.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    observer.observe(item);
+                });
+            };
+
+            animateItems(tableRows);
+            animateItems(listItems);
+
+            // Effet de survol sur les lignes de tableau
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 4px 8px rgba(147, 51, 234, 0.3)';
+                });
+                row.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = 'none';
+                });
+            });
+
+            // Effet de survol sur les éléments de liste
+            listItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 4px 8px rgba(147, 51, 234, 0.3)';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = 'none';
+                });
+            });
+
+            // Recherche dans les commandes
+            const searchInput = document.getElementById('dashboardSearch');
+            const ordersTable = document.getElementById('ordersTable');
+
+            if (searchInput && ordersTable) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const rows = ordersTable.querySelectorAll('tbody tr');
+
+                    rows.forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            row.style.display = '';
+                            row.classList.add('slide-in');
+                            setTimeout(() => {
+                                row.classList.remove('slide-in');
+                            }, 500);
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Filtre par période
+            const timeFilter = document.getElementById('timeFilter');
+            if (timeFilter && ordersTable) {
+                timeFilter.addEventListener('change', function() {
+                    const filter = this.value;
+                    const rows = ordersTable.querySelectorAll('tbody tr');
+
+                    rows.forEach(row => {
+                        row.classList.remove('slide-in');
+                        row.style.display = filter === '' ? '' : 'none';
+                        if (filter === '') {
+                            row.classList.add('slide-in');
+                        }
+                    });
+                });
+            }
+
+            // Effet de survol sur les liens de la navbar
+            const navbarLinks = document.querySelectorAll('.navbar-link');
+            navbarLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.textShadow = '0 0 8px rgba(147, 51, 234, 0.5)';
+                });
+                link.addEventListener('mouseleave', function() {
+                    this.style.textShadow = 'none';
+                });
+            });
+        });
+    </script>
+{% endblock %}

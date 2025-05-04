@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\LivresRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -35,7 +36,7 @@ class Livres
     private ?string $editeur = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $dateEdition = null;
+    private ?DateTimeInterface $dateEdition = null;
 
     #[ORM\Column]
     private ?float $prix = null;
@@ -129,12 +130,12 @@ class Livres
         return $this;
     }
 
-    public function getDateEdition(): ?\DateTimeInterface
+    public function getDateEdition(): ?DateTimeInterface
     {
         return $this->dateEdition;
     }
 
-    public function setDateEdition(\DateTimeInterface $dateEdition): static
+    public function setDateEdition(DateTimeInterface $dateEdition): static
     {
         $this->dateEdition = $dateEdition;
 
