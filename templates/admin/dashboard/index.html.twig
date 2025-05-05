@@ -1,0 +1,145 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block admin_body %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-tachometer-alt me-2"></i>Tableau de bord</h1>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ stats.total_commandes }}</h3>
+                    <p class="card-text text-muted">
+                        <i class="fas fa-shopping-cart me-2"></i>Commandes
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ stats.total_livres }}</h3>
+                    <p class="card-text text-muted">
+                        <i class="fas fa-book me-2"></i>Livres
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ stats.total_clients }}</h3>
+                    <p class="card-text text-muted">
+                        <i class="fas fa-users me-2"></i>Clients
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <h3 class="card-title">{{ stats.chiffre_affaires }} DTN</h3>
+                    <p class="card-text text-muted">
+                        <i class="fas fa-chart-simple me-2"></i>Chiffre d'affaires
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deux colonnes -->
+    <div class="row">
+        <!-- Dernières commandes -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-clock me-2"></i>Dernières commandes
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for commande in dernieres_commandes %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ path('app_admin_commande_show', {'id': commande.id}) }}">
+                                            #{{ commande.id }}
+                                        </a>
+                                    </td>
+                                    <td>{{ commande.date|date('d/m/Y') }}</td>
+                                    <td>{{ commande.panier.user.email|u.truncate(15, '...') }}</td>
+                                    <td>{{ commande.total|format_currency('EUR') }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center">Aucune commande récente</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- livres populaires -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-star me-2"></i>Livres les plus populaires
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for livre in livres_populaires %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ livre.livre.titre }}</h6>
+                                        <small class="text-muted">{{ livre.livre.categorie.libelle }}</small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">
+                                        {{ livre.ventes }} ventes
+                                    </span>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i>Pas de données de vente disponibles
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphique (espace réservé) -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <i class="fas fa-chart-line me-2"></i>Activité récente
+        </div>
+        <div class="card-body">
+            <div class="text-center py-5 bg-light rounded">
+                <p class="text-muted">
+                    <i class="fas fa-chart-bar fa-3x mb-3"></i><br>
+
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

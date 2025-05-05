@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% block client_title %}Symbook{% endblock %}{% endblock %}
+
+{% block body %}
+    <!-- Client Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ path('app_client_home') }}">
+                <i class="fas fa-book me-2"></i>Symbook
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarClient">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarClient">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.get('_route') == 'app_client_home' ? 'active' }}"
+                           href="{{ path('app_client_home') }}">
+                            <i class="fas fa-home me-1"></i> Accueil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.get('_route') == 'app_client_livre_all' ? 'active' }}"
+                           href="{{ path('app_client_livre_index') }}">
+                            <i class="fas fa-book-open me-1"></i> Livres
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.get('_route') == 'app_client_categorie_all' ? 'active' }}"
+                           href="{{ path('app_client_categorie_index') }}">
+                            <i class="fas fa-tags me-1"></i> Catégories
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="d-flex">
+                    <a href="{{ path('app_client_panier_index') }}" class="btn btn-outline-light position-relative me-2">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ app.session.get('panierCount', 0) }}
+                        </span>
+                    </a>
+
+                    {% if app.user %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i> {{ app.user.email }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#">
+                                        <i class="fas fa-user me-1"></i> Mon compte
+                                    </a></li>
+                                <li><a class="dropdown-item" href="{{ path('app_client_commande_index') }}">
+                                        <i class="fas fa-receipt me-1"></i> Mes commandes
+                                    </a></li>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <li><a class="dropdown-item" href="{{ path('app_admin_dashboard') }}">
+                                            <i class="fas fa-lock me-1"></i> Administration
+                                        </a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">
+                                        <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
+                                    </a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="btn-group">
+                            <a href="#" class="btn btn-outline-light">
+                                <i class="fas fa-sign-in-alt me-1"></i> Connexion
+                            </a>
+                            <a href="#" class="btn btn-light">
+                                <i class="fas fa-user-plus me-1"></i> Inscription
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash messages -->
+    <div class="container mt-3">
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <!-- Client Main content -->
+    <main class="">
+        {% block client_body %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+
+{% endblock %}

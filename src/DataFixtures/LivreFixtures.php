@@ -3,7 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Categories;
-use App\Entity\Livres;
+use App\Entity\livres;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -23,7 +23,7 @@ class LivreFixtures extends Fixture
 
 
             for ($i = 100; $i < 500; $i++) {
-                $Livre = new Livres();
+                $Livre = new livres();
                 $titre = substr($faker->sentence($faker->numberBetween(1, 3)), 0, -1);
                 $Livre->setTitre($titre)
                     ->setSlug(str_replace(" ", "-", strtolower(($titre))))

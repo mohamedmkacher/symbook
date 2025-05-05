@@ -22,7 +22,7 @@ class LignePanier
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?livres $livre = null;
+    private ?Livres $livre = null;
 
     public function getId(): ?int
     {
@@ -53,12 +53,12 @@ class LignePanier
         return $this;
     }
 
-    public function getLivre(): ?livres
+    public function getLivre(): ?Livres
     {
         return $this->livre;
     }
 
-    public function setLivre(?livres $livre): static
+    public function setLivre(?Livres $livre): static
     {
         $this->livre = $livre;
 

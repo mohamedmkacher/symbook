@@ -1,0 +1,89 @@
+{% extends 'client/base_client.html.twig' %}
+
+{% block client_title %}{{ livre.titre }}{% endblock %}
+
+{% block client_body %}
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_client_home') }}">Accueil</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_client_livre_index') }}">Livres</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ livre.titre }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Image du livre -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ livre.image }}"
+                         class="card-img-top"
+                         alt="{{ livre.titre }}">
+                </div>
+            </div>
+
+            <!-- Détails du livre -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="card-title">{{ livre.titre }}</h1>
+                        <p class="text-muted">
+                            <i class="fas fa-tag me-2"></i>{{ livre.categorie.libelle }}
+                        </p>
+                        <p class="text-muted">
+                            <i class="fas fa-barcode me-2"></i>ISBN: {{ livre.isbn }}
+                        </p>
+                        <p class="text-muted">
+                            <i class="fas fa-building me-2"></i>Éditeur: {{ livre.editeur }}
+                        </p>
+                        <p class="text-muted">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Date de publication: {{ livre.dateEdition|date('d/m/Y') }}
+                        </p>
+
+                        <h3 class="text-primary my-4">{{ livre.prix }} DTN</h3>
+
+                        <div class="mb-4">
+                            <h4>Résumé</h4>
+                            <p class="card-text">{{ livre.resume }}</p>
+                        </div>
+
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <form method="post"
+                                  action="{{ path('app_client_livre_add_to_cart', {'id': livre.id}) }}">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-auto">
+                                        <label for="quantity" class="col-form-label">Quantité:</label>
+                                    </div>
+                                    <div class="col-auto">
+                                        <input type="number" id="quantity" name="quantity"
+                                               class="form-control" value="1" min="1">
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-cart-plus me-2"></i>Ajouter au panier
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <a href="#" class="alert-link">Connectez-vous</a>
+                                pour ajouter ce livre à votre panier.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

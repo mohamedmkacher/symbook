@@ -11,6 +11,27 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CategoriesRepository extends ServiceEntityRepository
 {
+    // src/Repository/CategoriesRepository.php
+    public function findAllWithBookCount()
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c as category', 'COUNT(l.id) as bookCount')
+            ->leftJoin('c.livres', 'l')
+            ->groupBy('c.id')
+            ->getQuery()
+            ->getResult();
+    }
+    // src/Repository/CategoriesRepository.php
+    public function findOneBySlug(string $slug): ?Categories
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.slug = :slug')
+            ->setParameter('slug', $slug)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Categories::class);

@@ -1,0 +1,98 @@
+{% extends 'client/base_client.html.twig' %}
+
+{% block client_title %}Mon panier{% endblock %}
+
+{% block client_body %}
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-shopping-cart me-2"></i>Mon panier</h1>
+            <a href="{{ path('app_client_livre_index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i> Continuer mes achats
+            </a>
+        </div>
+
+        {% if panier and panier.lignesPanier|length > 0 %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Livre</th>
+                                <th>Prix unitaire</th>
+                                <th>Quantité</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for ligne in panier.lignesPanier %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ asset('uploads/livres/' ~ ligne.livre.image) }}"
+                                                 alt="{{ ligne.livre.titre }}"
+                                                 width="60" class="me-3 rounded">
+                                            <div>
+                                                <h6 class="mb-0">{{ ligne.livre.titre }}</h6>
+                                                <small class="text-muted">{{ ligne.livre.categorie.libelle }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ ligne.livre.prix|format_currency('EUR') }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <form method="post" action="{{ path('app_client_panier_update', {'id': ligne.id}) }}">
+                                                <input type="hidden" name="action" value="decrease">
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                                        {{ ligne.qte <= 1 ? 'disabled' : '' }}>
+                                                    <i class="fas fa-minus"></i>
+                                                </button>
+                                            </form>
+                                            <span class="mx-2">{{ ligne.qte }}</span>
+                                            <form method="post" action="{{ path('app_client_panier_update', {'id': ligne.id}) }}">
+                                                <input type="hidden" name="action" value="increase">
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    <td>{{ (ligne.livre.prix * ligne.qte)|format_currency('EUR') }}</td>
+                                    <td>
+                                        <form method="post" action="{{ path('app_client_panier_remove', {'id': ligne.id}) }}"
+                                              onsubmit="return confirm('Supprimer cet article du panier ?');">
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end fw-bold">Total :</td>
+                                <td colspan="2" class="fw-bold">
+                                    {{ panier.lignesPanier|reduce((total, ligne) => total + (ligne.livre.prix * ligne.qte), 0)|format_currency('EUR') }}
+                                </td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{{ path('app_client_panier_checkout') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-credit-card me-2"></i> Passer la commande
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> Votre panier est vide.
+                <a href="{{ path('app_client_livre_index') }}" class="alert-link">Parcourir les livres</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

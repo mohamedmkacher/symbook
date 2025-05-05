@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\admin;
 
 use App\Entity\Categories;
 use App\Form\CategorieType;
@@ -19,7 +19,7 @@ final class CategorieController extends AbstractController
     public function all(CategoriesRepository $categoriesRepository): Response
     {
         $categories = $categoriesRepository->findAll();
-        return $this->render('categorie/all.html.twig', [
+        return $this->render('admin/categorie/index.html.twig', [
             'categories' => $categories,
 
         ]);
@@ -38,7 +38,7 @@ final class CategorieController extends AbstractController
             $this->addFlash('success', 'Ajout de la catégorie avec succès');
             return $this->redirectToRoute('app_admin_categorie_all');
         }
-        return $this->render('categorie/add.html.twig', ['form' => $form]);
+        return $this->render('admin/categorie/new.html.twig', ['form' => $form]);
 
 
     }
@@ -53,7 +53,7 @@ final class CategorieController extends AbstractController
             $this->addFlash('success', 'Mise à jour de la catégorie avec succès');
             return $this->redirectToRoute('app_admin_categorie_all');
         }
-        return $this->render('categorie/update.html.twig', ['form' => $form]);
+        return $this->render('admin/categorie/edit.html.twig', ['form' => $form]);
 
 
     }

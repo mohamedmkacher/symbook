@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin | {{ parent() }}{% endblock %}
+
+{% block body %}
+    <!-- Admin Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ path('app_admin_dashboard') }}">
+                <i class="fas fa-book me-2"></i>Symbook Admin
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdmin">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarAdmin">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.get('_route') == 'app_admin_dashboard' ? 'active' }}"
+                           href="{{ path('app_admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.get('_route') == 'app_admin_livre_all' ? 'active' }}"
+                           href="{{ path('app_admin_livre_all') }}">
+                            <i class="fas fa-book-open me-1"></i> Livres
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.get('_route') == 'app_admin_categorie_all' ? 'active' }}"
+                           href="{{ path('app_admin_categorie_all') }}">
+                            <i class="fas fa-tags me-1"></i> Catégories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.get('_route') == 'app_admin_commande_all' ? 'active' }}"
+                           href="{{ path('app_admin_commande_index') }}">
+                            <i class="fas fa-shopping-cart me-1"></i> Commandes
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="d-flex">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="adminDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-cog me-1"></i> Admin
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ path('app_client_home') }}">
+                                    <i class="fas fa-store me-1"></i> Voir le site
+                                </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">
+                                    <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
+                                </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash messages -->
+    <div class="container mt-3">
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <!-- Admin Main content -->
+    <main class="container my-4">
+        {% block admin_body %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+   {% endblock %}
