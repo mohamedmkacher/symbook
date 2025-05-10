@@ -12,6 +12,11 @@
         </div>
 
         {% if items|length > 0 %}
+            {% set total = 0 %}
+            {% for item in items %}
+                {% set total = total + (item.livre.prix * item.qte) %}
+            {% endfor %}
+
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
@@ -28,17 +33,18 @@
                             <tbody>
                             {% for item in items %}
                                 <tr>
-                                    {# On part du principe que 'item.livre' contient l'entité Livre,
-                                       et que 'item.qte' est la quantité #}
                                     <td>{{ item.livre.titre }}</td>
                                     <td>{{ item.livre.prix }}</td>
-                                    <td><form method="post" action="{{ path('app_client_panier_decrement', { id: item.livre.id }) }}" style="display:inline;">
+                                    <td>
+                                        <form method="post" action="{{ path('app_client_panier_decrement', { id: item.livre.id }) }}" style="display:inline;">
                                             <button type="submit" class="btn btn-sm btn-secondary">-</button>
-                                        </form>{{ item.qte }}<form method="post" action="{{ path('app_client_panier_increment', { id: item.livre.id }) }}" style="display:inline;">
+                                        </form>
+                                        {{ item.qte }}
+                                        <form method="post" action="{{ path('app_client_panier_increment', { id: item.livre.id }) }}" style="display:inline;">
                                             <button type="submit" class="btn btn-sm btn-secondary">+</button>
-                                        </form></td>
+                                        </form>
+                                    </td>
                                     <td>{{ item.livre.prix * item.qte }}</td>
-
                                     <td>
                                         <form method="post"
                                               action="{{ path('app_client_panier_remove', { 'id': item.livre.id }) }}"
@@ -48,13 +54,18 @@
                                             </button>
                                         </form>
                                     </td>
-
-
                                 </tr>
                             {% endfor %}
+                            <tr>
+                                <td colspan="3"><strong>Total du panier :</strong></td>
+                                <td><strong>{{ total }}</strong></td>
+                                <td></td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
+
+
 
                     <div class="d-flex justify-content-end mt-4">
                         <a href="#" class="btn btn-primary btn-lg">
