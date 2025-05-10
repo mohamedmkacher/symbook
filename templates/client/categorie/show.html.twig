@@ -1,19 +1,5 @@
 {% extends 'client/base_client.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <!-- Ajout de la feuille de style Animate.css -->
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-            integrity="sha512-bqK3ZfFz7Kp8jn9KCU8yLkzmpSIl9ltNhPhSPvZ7dAoCEGHIWjDxEEyJ8OO/T+NfWfTsyalLSMQ93qqEFqtIEA=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-    />
-{% endblock %}
-
-{% block client_title %}{{ categorie.libelle }}{% endblock %}
-
 {% block client_body %}
     <div class="container py-4">
         <nav aria-label="breadcrumb" class="mb-4">
@@ -23,15 +9,30 @@
                 <li class="breadcrumb-item active" aria-current="page">{{ categorie.libelle }}</li>
             </ol>
         </nav>
-
         <div class="d-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
             <h1>
                 <i class="fas fa-tag me-2"></i>
                 {{ categorie.libelle }}
             </h1>
             <span class="badge bg-primary">
-    {{ livres.getTotalItemCount() }} livre(s) au total
-</span></div>
+                {{ livres.getTotalItemCount() }} livre(s) au total
+            </span>
+        </div>
+        <!-- Barre de recherche -->
+        <form method="get" action="{{ path('app_client_categorie_show', { 'slug': categorie.slug }) }}" class="mb-4 animate__animated animate__fadeInDown">
+            <div class="input-group">
+                <input
+                        type="text"
+                        name="search"
+                        value="{{ app.request.query.get('search') }}"
+                        class="form-control"
+                        placeholder="Rechercher un livre..."
+                >
+                <button class="btn btn-primary" type="submit">Rechercher</button>
+            </div>
+        </form>
+
+
 
         <div class="card mb-4 animate__animated animate__fadeIn">
             <div class="card-body">
@@ -55,15 +56,15 @@
                             </div>
                             <div class="card-footer bg-white">
                                 <div class="d-flex justify-content-between align-items-center">
-        <span class="fw-bold text-primary">
-            {{ livre.prix }} DTN
-        </span>
+                                    <span class="fw-bold text-primary">
+                                        {{ livre.prix }} DTN
+                                    </span>
                                     <div>
                                         <a href="{{ path('app_client_livre_show', {'id': livre.id}) }}"
                                            class="btn btn-sm btn-outline-primary me-2">
                                             Voir détails
                                         </a>
-                                        <a href="{{ path('app_client_panier_add',{'id':livre.id}) }}"
+                                        <a href="{{ path('app_client_panier_add', {'id': livre.id}) }}"
                                            class="btn btn-sm btn-success">
                                             <i class="fas fa-shopping-cart"></i>
                                         </a>

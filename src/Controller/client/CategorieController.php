@@ -43,9 +43,16 @@ class CategorieController extends AbstractController
             throw $this->createNotFoundException('Catégorie non trouvée');
         }
 
+        // Récupération du terme de recherche depuis l'URL (GET)
+        $searchTerm = $request->query->get('search', '');
+
+        // Récupération de la page courante
         $page = $request->query->getInt('page', 1);
-        $livres = $livresRepository->findPaginatedByCategory(
+
+        // Méthode à implémenter qui intègre la logique de recherche
+        $livres = $livresRepository->findPaginatedByCategoryAndSearch(
             $categorie->getId(),
+            $searchTerm,
             $paginator,
             $page,
             8
@@ -54,6 +61,7 @@ class CategorieController extends AbstractController
         return $this->render('client/categorie/show.html.twig', [
             'categorie' => $categorie,
             'livres' => $livres,
+            'searchTerm' => $searchTerm, // Pour ré-afficher éventuellement la valeur dans la barre de recherche
         ]);
     }
 }

@@ -108,4 +108,30 @@ class LivresRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function findPaginatedByCategoryAndSearch(
+        ?int $getId,
+        float|bool|int|string|null $searchTerm,
+        PaginatorInterface $paginator,
+        int $page,
+        int $limit
+    ) {
+        $queryBuilder = $this->createQueryBuilder('l')
+            ->where('l.categorie = :catId')
+            ->setParameter('catId', $getId);
+
+        // Si un terme de recherche est fourni, on ajoute une condition
+        if (!empty($searchTerm)) {
+            $queryBuilder
+                ->andWhere('l.titre LIKE :searchTerm OR l.editeur LIKE :searchTerm OR l.resume LIKE :searchTerm')
+                ->setParameter('searchTerm', '%'.$searchTerm.'%');
+        }
+
+        $query = $queryBuilder->getQuery();
+
+        return $paginator->paginate(
+            $query,
+            $page,
+            $limit
+        );
+    }
 }
