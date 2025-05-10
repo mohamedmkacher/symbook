@@ -21,8 +21,13 @@ class LivresRepository extends ServiceEntityRepository
     public function findMostPopularBooks(int $limit = 5): array
     {
         return $this->createQueryBuilder('l')
-            ->select('l as livre, COUNT(lp.id) as ventes')
+            ->select('l AS livre, COUNT(lp.id) AS ventes')
+            // Jointure pour récupérer les lignes panier associées au livre
             ->leftJoin('App\Entity\LignePanier', 'lp', 'WITH', 'lp.livre = l.id')
+            // Jointure pour récupérer le panier afin de vérifier son état
+            ->leftJoin('lp.panier', 'p')
+            ->where('p.etat_panier = :validState')
+            ->setParameter('validState', 'VALIDE') // Adaptez la valeur selon votre logique
             ->groupBy('l.id')
             ->orderBy('ventes', 'DESC')
             ->setMaxResults($limit)
@@ -50,13 +55,18 @@ class LivresRepository extends ServiceEntityRepository
         );
     }
 
-    public function findFilteredBooks(?int $categoryId = null, ?string $search = null): array
-    {
+    public function findFilteredBooks(
+        $categoryId,
+        ?string $search,
+        PaginatorInterface $paginator,
+        int $currentPage,
+        int $limit
+    ) {
         $qb = $this->createQueryBuilder('l')
             ->leftJoin('l.categorie', 'c')
             ->orderBy('l.titre', 'ASC');
 
-        if ($categoryId) {
+        if ($categoryId!='') {
             $qb->andWhere('c.id = :categoryId')
                 ->setParameter('categoryId', $categoryId);
         }
@@ -66,9 +76,12 @@ class LivresRepository extends ServiceEntityRepository
                 ->setParameter('search', '%' . $search . '%');
         }
 
-        return $qb->getQuery()->getResult();
+        return $paginator->paginate(
+            $qb->getQuery(),
+            $currentPage,
+            $limit
+        );
     }
-
 
 
     //    /**

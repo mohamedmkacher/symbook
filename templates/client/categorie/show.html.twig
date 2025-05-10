@@ -1,28 +1,39 @@
 {% extends 'client/base_client.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- Ajout de la feuille de style Animate.css -->
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+            integrity="sha512-bqK3ZfFz7Kp8jn9KCU8yLkzmpSIl9ltNhPhSPvZ7dAoCEGHIWjDxEEyJ8OO/T+NfWfTsyalLSMQ93qqEFqtIEA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+    />
+{% endblock %}
+
 {% block client_title %}{{ categorie.libelle }}{% endblock %}
 
 {% block client_body %}
     <div class="container py-4">
         <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb">
+            <ol class="breadcrumb animate__animated animate__fadeInDown">
                 <li class="breadcrumb-item"><a href="{{ path('app_client_home') }}">Accueil</a></li>
                 <li class="breadcrumb-item"><a href="{{ path('app_client_categorie_index') }}">Catégories</a></li>
                 <li class="breadcrumb-item active" aria-current="page">{{ categorie.libelle }}</li>
             </ol>
         </nav>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
             <h1>
                 <i class="fas fa-tag me-2"></i>
                 {{ categorie.libelle }}
             </h1>
             <span class="badge bg-primary">
-                {{ livres|length }} livre(s)
-            </span>
-        </div>
+    {{ livres.getTotalItemCount() }} livre(s) au total
+</span></div>
 
-        <div class="card mb-4">
+        <div class="card mb-4 animate__animated animate__fadeIn">
             <div class="card-body">
                 <p class="lead">{{ categorie.description }}</p>
             </div>
@@ -31,9 +42,10 @@
         {% if livres|length > 0 %}
             <div class="row">
                 {% for livre in livres %}
-                    <div class="col-md-4 mb-4">
+                    <!-- Affichage en 4 colonnes sur md, en 6 colonnes sur sm -->
+                    <div class="col-sm-6 col-md-3 mb-4 animate__animated animate__fadeInUp">
                         <div class="card h-100">
-                            <img src="{{ livre.image}}"
+                            <img src="{{ livre.image }}"
                                  class="card-img-top"
                                  alt="{{ livre.titre }}">
                             <div class="card-body">
@@ -43,13 +55,19 @@
                             </div>
                             <div class="card-footer bg-white">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold text-primary">
-                                        {{ livre.prix}} DTN
-                                    </span>
-                                    <a href="{{ path('app_client_livre_show', {'id': livre.id}) }}"
-                                       class="btn btn-sm btn-outline-primary">
-                                        Voir détails
-                                    </a>
+        <span class="fw-bold text-primary">
+            {{ livre.prix }} DTN
+        </span>
+                                    <div>
+                                        <a href="{{ path('app_client_livre_show', {'id': livre.id}) }}"
+                                           class="btn btn-sm btn-outline-primary me-2">
+                                            Voir détails
+                                        </a>
+                                        <a href="{{ path('app_client_panier_add',{'id':livre.id}) }}"
+                                           class="btn btn-sm btn-success">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -58,11 +76,11 @@
             </div>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-center mt-4">
+            <div class="d-flex justify-content-center mt-4 animate__animated animate__fadeInUp">
                 {{ knp_pagination_render(livres) }}
             </div>
         {% else %}
-            <div class="alert alert-info">
+            <div class="alert alert-info animate__animated animate__fadeInUp">
                 <i class="fas fa-info-circle me-2"></i>
                 Aucun livre disponible dans cette catégorie.
             </div>

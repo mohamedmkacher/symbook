@@ -15,25 +15,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class CommandeController extends AbstractController
 {
     #[Route('/', name: 'app_client_commande_index', methods: ['GET'])]
-    public function index(CommandeRepository $commandeRepository): Response
+    public function index(CommandeRepository $commandeRepository): void
     {
-        $user = $this->getUser();
-
-        return $this->render('client/commande/index.html.twig', [
-            'commandes' => $commandeRepository->findByUserOrderedByDate($user),
-        ]);
+        return ;
     }
 
     #[Route('/{id}', name: 'app_client_commande_show', methods: ['GET'])]
-    public function show(Commande $commande): Response
+    public function show(Commande $commande): void
     {
-        // Vérification que la commande appartient bien à l'utilisateur connecté
-        if ($commande->getPanier()->getUser() !== $this->getUser()) {
-            throw $this->createAccessDeniedException('Vous ne pouvez pas accéder à cette commande');
-        }
 
-        return $this->render('client/commande/show.html.twig', [
-            'commande' => $commande,
-        ]);
+       return ;
     }
 }

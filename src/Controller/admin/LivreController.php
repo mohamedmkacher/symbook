@@ -40,7 +40,7 @@ final class LivreController extends AbstractController
     {
         $livre = $livresRepository->find($id);
         if (null === $livre) {
-            //throw $this->createNotFoundException("Le livre n'existe pas.");
+
             throw new NotFoundHttpException("Le livre n'existe pas.");
         } else {
             return $this->render('admin/livre/show.html.twig', ['livre' => $livre]);
@@ -53,9 +53,9 @@ final class LivreController extends AbstractController
 
 
         $livres = $paginator->paginate(
-            $livresRepository->findAll(), /* query NOT result */
-            $request->query->getInt('page', 1), /* page number */
-            10 /* limit per page */
+            $livresRepository->findAll(),
+            $request->query->getInt('page', 1),
+            10
         );
         return $this->render('admin/livre/index.html.twig', ['livres' => $livres]);
     }

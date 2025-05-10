@@ -1,5 +1,5 @@
 <?php
-// src/Controller/Admin/DashboardController.php
+
 namespace App\Controller\admin;
 
 use App\Repository\CommandeRepository;
@@ -18,7 +18,7 @@ class DashBoardController extends AbstractController
         LivresRepository $livresRepository,
         UserRepository $userRepository
     ): Response {
-        // Statistiques principales
+
         $stats = [
             'total_commandes' => $commandeRepository->count([]),
             'total_livres' => $livresRepository->count([]),
@@ -26,14 +26,14 @@ class DashBoardController extends AbstractController
             'chiffre_affaires' => $commandeRepository->getChiffreAffairesTotal(),
         ];
 
-        // Dernières commandes
+
         $dernieresCommandes = $commandeRepository->findBy(
             [],
             ['date' => 'DESC'],
             5
         );
 
-        // livres les plus vendus
+
         $livresPopulaires = $livresRepository->findMostPopularBooks(3);
 
         return $this->render('admin/dashboard/index.html.twig', [

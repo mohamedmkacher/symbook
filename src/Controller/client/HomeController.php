@@ -1,5 +1,5 @@
 <?php
-// src/Controller/Client/HomeController.php
+
 namespace App\Controller\client;
 
 use App\Repository\CategoriesRepository;
@@ -16,17 +16,17 @@ class HomeController extends AbstractController
         LivresRepository $livresRepository,
         CategoriesRepository $categoriesRepository
     ): Response {
-        // livres récemment ajoutés
+
         $nouveautes = $livresRepository->findBy(
             [],
             ['id' => 'DESC'],
-            4
+            8
         );
 
-        // livres les plus vendus
-        $bestSellers = $livresRepository->findMostPopularBooks(4);
 
-        // Toutes les catégories
+        $bestSellers = $livresRepository->findMostPopularBooks(8);
+
+
         $categories = $categoriesRepository->findAll();
 
         return $this->render('client/home.html.twig', [

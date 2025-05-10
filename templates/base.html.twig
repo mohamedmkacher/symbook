@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Symbook{% endblock %}</title>
 
+    <!-- Animate.css (CDN link already included) -->
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    >
+
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
 
@@ -20,12 +26,10 @@
     {% block stylesheets %}{% endblock %}
 </head>
 
+{% block body %}{% endblock %}
 
-        {% block body %}{% endblock %}
-
-
-<!-- Footer -->
-<footer class="bg-light py-4 mt-auto">
+<!-- Footer with Animate.css -->
+<footer class="bg-light py-4 mt-auto animate__animated animate__fadeInUp">
     <div class="container text-center">
         <p class="mb-0">&copy; {{ "now"|date("Y") }} Symbook. Tous droits réservés.</p>
     </div>
@@ -36,5 +40,4 @@
 <script src="{{ asset('app.js') }}"></script>
 
 {% block javascripts %}{% endblock %}
-
 </html>

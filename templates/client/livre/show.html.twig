@@ -56,15 +56,15 @@
                             <p class="card-text">{{ livre.resume }}</p>
                         </div>
 
-                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+
                             <form method="post"
-                                  action="{{ path('app_client_livre_add_to_cart', {'id': livre.id}) }}">
+                                  action="{{ path('app_client_panier_add',{'id': livre.id}) }}">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-auto">
                                         <label for="quantity" class="col-form-label">Quantité:</label>
                                     </div>
                                     <div class="col-auto">
-                                        <input type="number" id="quantity" name="quantity"
+                                        <input type="number" id="quantity" name="qte"
                                                class="form-control" value="1" min="1">
                                     </div>
                                     <div class="col-auto">
@@ -74,13 +74,9 @@
                                     </div>
                                 </div>
                             </form>
-                        {% else %}
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                <a href="#" class="alert-link">Connectez-vous</a>
-                                pour ajouter ce livre à votre panier.
-                            </div>
-                        {% endif %}
+
+
+
                     </div>
                 </div>
             </div>

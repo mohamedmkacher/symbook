@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-// src/Controller/Client/CategorieController.php
+
 #[Route('/categories')]
 class CategorieController extends AbstractController
 {
@@ -46,9 +46,9 @@ class CategorieController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $livres = $livresRepository->findPaginatedByCategory(
             $categorie->getId(),
-            $paginator,    // The PaginatorInterface service
-            $page,         // Current page number from request
-            6              // Items per page
+            $paginator,
+            $page,
+            8
         );
 
         return $this->render('client/categorie/show.html.twig', [
