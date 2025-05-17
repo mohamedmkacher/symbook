@@ -1,0 +1,102 @@
+{% extends 'client/base_client.html.twig' %}
+
+{% block client_title %}Commande confirmée{% endblock %}
+
+{% block client_body %}
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <i class="fas fa-check-circle text-success fa-4x mb-3"></i>
+            <h1 class="mb-2">Commande confirmée</h1>
+            <p class="text-muted">
+                Merci pour votre commande ! Votre confirmation a été envoyée par email.
+            </p>
+        </div>
+
+        <div class="card max-w-lg mx-auto">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Détails de la commande</h5>
+                <span class="text-muted">CMD-{{ commande.id|format('%06d') }}</span>
+            </div>
+            <div class="card-body">
+                <h6 class="mb-3">Articles commandés</h6>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Titre</th>
+                            <th>Prix</th>
+                            <th>Quantité</th>
+                            <th>Sous-total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for lignePanier in commande.panier.lignesPanier %}
+                            <tr>
+                                <td>{{ lignePanier.livre.titre }}</td>
+                                <td>{{ lignePanier.livre.prix }}</td>
+                                <td>{{ lignePanier.qte }}</td>
+                                <td>{{ lignePanier.livre.prix * lignePanier.qte }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <hr>
+
+                <h6 class="mb-3">Informations de livraison</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="text-muted mb-1">Adresse</p>
+                        {% if commande.panier.user %}
+                            <p>
+                                {% if commande.panier.user.prenom is defined %}
+                                    {{ commande.panier.user.prenom }}
+                                {% else %}
+                                    <!-- Utiliser une valeur par défaut ou un autre champ disponible -->
+                                    {{ commande.panier.user.email|split('@')[0] }}
+                                {% endif %}
+                                {{ commande.panier.user.nom|default('') }}<br>
+                                {{ commande.panier.user.adresse|default('') }}<br>
+                                {{ commande.panier.user.codePostal|default('') }} {{ commande.panier.user.ville|default('') }}
+                            </p>
+                        {% else %}
+                            <p>Jean
+                            <p>Jean Dupont<br>
+                                123 rue de Paris<br>
+                                75001 Paris, France</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <p class="text-muted mb-1">Méthode de livraison</p>
+                        <p>Livraison standard<br>
+                            Livraison estimée: 3-5 jours ouvrés</p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h6 class="mb-3">Récapitulatif</h6>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Total</span>
+                    <span>{{ commande.total }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Date de commande</span>
+                    <span>{{ commande.date|date('d/m/Y') }}</span>
+                </div>
+
+                <div class="alert alert-info mt-4">
+                    <i class="fas fa-info-circle me-2"></i> Vous recevrez un email avec les informations de suivi dès que votre commande sera expédiée.
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-grid gap-2">
+                    <a href="{{ path('app_client_livre_index') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-2"></i> Retour à l'accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

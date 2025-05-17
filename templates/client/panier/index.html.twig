@@ -1,0 +1,84 @@
+{% extends 'client/base_client.html.twig' %}
+
+{% block client_title %}Mon panier{% endblock %}
+
+{% block client_body %}
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-shopping-cart me-2"></i>Mon panier</h1>
+            <a href="{{ path('app_client_livre_index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i> Continuer mes achats
+            </a>
+        </div>
+
+        {% if items|length > 0 %}
+            {% set total = 0 %}
+            {% for item in items %}
+                {% set total = total + (item.livre.prix * item.qte) %}
+            {% endfor %}
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Titre</th>
+                                <th>Prix</th>
+                                <th>Quantité</th>
+                                <th>Sous-total</th>
+                                <th>Retirer</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in items %}
+                                <tr>
+                                    <td>{{ item.livre.titre }}</td>
+                                    <td>{{ item.livre.prix }}</td>
+                                    <td>
+                                        <form method="post" action="{{ path('app_client_panier_decrement', { id: item.livre.id }) }}" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-secondary">-</button>
+                                        </form>
+                                        {{ item.qte }}
+                                        <form method="post" action="{{ path('app_client_panier_increment', { id: item.livre.id }) }}" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-secondary">+</button>
+                                        </form>
+                                    </td>
+                                    <td>{{ item.livre.prix * item.qte }}</td>
+                                    <td>
+                                        <form method="post"
+                                              action="{{ path('app_client_panier_remove', { 'id': item.livre.id }) }}"
+                                              onsubmit="return confirm('Supprimer cet article du panier ?');">
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i> Retirer
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="3"><strong>Total du panier :</strong></td>
+                                <td><strong>{{ total }}</strong></td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="{{ path('app_client_commande_index') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-credit-card me-2"></i> Passer la commande
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> Votre panier est vide.
+                <a href="{{ path('app_client_livre_index') }}" class="alert-link">Parcourir les livres</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,222 @@
+{% extends 'client/base_client.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+          integrity="sha512-bqK3ZfFz7Kp8jn9KCU8yLkzmpSIl9ltNhPhSPvZ7dAoCEGHIWjDxEEyJ8OO/T+NfWfTsyalLSMQ93qqEFqtIEA=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"/>
+    {# Assurez-vous de charger Bootstrap CSS et JS si ce n’est pas déjà fait #}
+{% endblock %}
+
+{% block client_title %}Bienvenue sur Symbook{% endblock %}
+
+{% block client_body %}
+
+
+    <!-- Section Hero -->
+    <section class="hero-section bg-light py-5 mb-5 animate__animated animate__fadeInUp">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">
+                        Découvrez notre collection de livres
+                    </h1>
+                    <p class="lead mb-4 animate__animated animate__fadeInUp">
+                        Des milliers de livres disponibles pour tous les goûts et tous les âges.
+                    </p>
+                    <a href="{{ path('app_client_livre_index') }}"
+                       class="btn btn-primary btn-lg animate__animated animate__pulse animate__delay-1s">
+                        <i class="fas fa-book-open me-2"></i> Parcourir le catalogue
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <img src="{{ asset('img.png') }}"
+                         alt="Collection de livres"
+                         class="img-fluid rounded shadow animate__animated animate__fadeInRight">
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="container my-4 animate__animated animate__fadeInUp">
+        <form action="{{ path('app_client_livre_index') }}" method="get" class="d-flex">
+            <input class="form-control me-2" type="search" name="search" placeholder="Recherchez un livre..." aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Rechercher</button>
+        </form>
+    </div>
+
+    {% set chunkSize = 4 %} {# 4 éléments par diapositive #}
+
+    <!-- Carrousel Nouveautés -->
+    <section class="mb-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4"><i class="fas fa-star me-2 text-warning"></i> Nos nouveautés</h2>
+                <a href="{{ path('app_client_livre_index') }}" class="btn btn-sm btn-outline-primary">
+                    Voir tout <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            <!-- data-bs-ride="carousel" pour l'autodéfilement, data-bs-interval pour la vitesse, data-bs-wrap pour revenir au début -->
+            <div id="carouselNouveautes" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" data-bs-wrap="true">
+                <div class="carousel-inner">
+                    {% for nouveautesGroup in nouveautes|batch(chunkSize, fill='') %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <div class="row justify-content-center">
+                                {% for livre in nouveautesGroup %}
+                                    {% if livre is not empty %}
+                                        <div class="col-md-3 mb-4 d-flex align-items-stretch">
+                                            <div class="card border-0 shadow-sm w-100 animate__animated animate__fadeIn">
+                                                <img src="{{ livre.image }}" class="card-img-top" alt="{{ livre.titre }}">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{ livre.titre|u.truncate(20, '...') }}</h5>
+                                                    <p class="card-text text-muted small">{{ livre.categorie.libelle }}</p>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="fw-bold text-primary">{{ livre.prix }} DTN</span>
+                                                        <a href="{{ path('app_client_panier_add', {'id': livre.id}) }}"
+                                                           class="btn btn-sm btn-outline-primary"
+                                                           title="Ajouter au panier">
+                                                            <i class="fas fa-cart-plus"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselNouveautes" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Précédent</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselNouveautes" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Suivant</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carrousel Best-sellers -->
+    <section class="mb-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4"><i class="fas fa-fire me-2 text-danger"></i> Best-sellers</h2>
+                <a href="{{ path('app_client_livre_index') }}" class="btn btn-sm btn-outline-primary">
+                    Voir tout <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            <div id="carouselBestSellers" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" data-bs-wrap="true">
+                <div class="carousel-inner">
+                    {% for bestGroup in bestSellers|batch(chunkSize, fill='') %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <div class="row justify-content-center">
+                                {% for item in bestGroup %}
+                                    {% if item is not empty %}
+                                        <div class="col-md-3 mb-4 d-flex align-items-stretch">
+                                            <div class="card border-0 shadow-sm w-100 animate__animated animate__fadeIn position-relative">
+                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="z-index: 1;">
+                                                    N°{{ loop.index + (loop.parent.loop.index0 * chunkSize) }}
+                                                </span>
+                                                <img src="{{ item.livre.image }}" class="card-img-top" alt="{{ item.livre.titre }}">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{ item.livre.titre|u.truncate(20, '...') }}</h5>
+                                                    <p class="card-text text-muted small">{{ item.livre.categorie.libelle }}</p>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="fw-bold text-primary">{{ item.livre.prix }} DTN</span>
+                                                        <a href="{{ path('app_client_panier_add', {'id': item.livre.id}) }}"
+                                                           class="btn btn-sm btn-outline-primary"
+                                                           title="Ajouter au panier">
+                                                            <i class="fas fa-cart-plus"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselBestSellers" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Précédent</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselBestSellers" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Suivant</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carrousel Catégories -->
+    <section class="mb-5">
+        <div class="container">
+            <h2 class="h4 mb-4"><i class="fas fa-tags me-2 text-info"></i> Nos catégories</h2>
+
+            <div id="carouselCategories" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" data-bs-wrap="true">
+                <div class="carousel-inner">
+                    {% for catGroup in categories|batch(chunkSize, fill='') %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <div class="row justify-content-center">
+                                {% for categorie in catGroup %}
+                                    {% if categorie is not empty %}
+                                        <div class="col-md-3 mb-4 d-flex align-items-stretch">
+                                            <div class="card border-0 shadow-sm w-100 animate__animated animate__fadeIn">
+                                                <div class="card-body text-center">
+                                                    <div class="icon-lg bg-info bg-opacity-10 text-info rounded-circle mb-3 p-3">
+                                                        <i class="fas fa-tag fa-2x"></i>
+                                                    </div>
+                                                    <h5 class="card-title">{{ categorie.libelle }}</h5>
+                                                    <p class="card-text text-muted small">
+                                                        {{ categorie.description|u.truncate(50, '...') }}
+                                                    </p>
+                                                    <a href="{{ path('app_client_categorie_show', {'slug': categorie.slug}) }}"
+                                                       class="btn btn-sm btn-outline-info">
+                                                        Voir les livres
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselCategories" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Précédent</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselCategories" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Suivant</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="bg-primary text-white py-5 animate__animated animate__fadeInUp">
+        <div class="container text-center">
+            <h2 class="mb-4">Prêt à commencer votre lecture ?</h2>
+            <p class="lead mb-4">Inscrivez-vous pour bénéficier de nos offres exclusives.</p>
+            <a href="#" class="btn btn-light btn-lg me-2">
+                <i class="fas fa-user-plus me-2"></i> S'inscrire
+            </a>
+            <a href="{{ path('app_client_livre_index') }}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-book me-2"></i> Voir le catalogue
+            </a>
+        </div>
+    </section>
+{% endblock %}

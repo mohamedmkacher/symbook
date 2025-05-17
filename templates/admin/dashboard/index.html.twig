@@ -852,7 +852,13 @@
                                         </a>
                                     </td>
                                     <td>{{ commande.date|date('d/m/Y') }}</td>
-                                    <td>{{ commande.panier.user.email|u.truncate(15, '...') }}</td>
+                                    <td>
+                                        {% if commande.panier.user is not null %}
+                                            {{ commande.panier.user.email|u.truncate(15, '...') }}
+                                        {% else %}
+                                            <span class="text-muted">Utilisateur anonyme</span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{ commande.total|format_currency('EUR') }}</td>
                                 </tr>
                             {% else %}

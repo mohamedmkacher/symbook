@@ -1,0 +1,143 @@
+{% extends 'client/base_client.html.twig' %}
+
+{% block client_title %}Détails de la commande #{{ commande.id }} - Symbook{% endblock %}
+
+{% block client_body %}
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Commande #{{ commande.id }}</h1>
+            <a href="{{ path('app_client_commandes') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Retour aux commandes
+            </a>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Date:</strong> {{ commande.date|date('d/m/Y') }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Total:</strong> {{ commande.total|format_currency('TND') }}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>État:</strong>
+                        {% if commande.paiement %}
+                            <span class="badge bg-success">Payée</span>
+                        {% else %}
+                            <span class="badge bg-warning">En attente de paiement</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title mb-4">Articles commandés</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Livre</th>
+                            <th>Prix unitaire</th>
+                            <th>Quantité</th>
+                            <th>Total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for ligne in commande.panier.lignesPanier %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if ligne.livre.image is defined and ligne.livre.image %}
+                                            <img src="{{ asset('uploads/livres/' ~ ligne.livre.image) }}" alt="{{ ligne.livre.titre }}" class="me-3" style="width: 50px; height: auto;">
+                                        {% endif %}
+                                        <div>
+                                            <strong>{{ ligne.livre.titre }}</strong><br>
+                                            {% if ligne.livre.auteur is defined %}
+                                                <small class="text-muted">{{ ligne.livre.auteur }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if ligne.livre.prix is defined %}
+                                        {{ ligne.livre.prix|format_currency('TND') }}
+                                    {% else %}
+                                        <span class="text-muted">Prix non disponible</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ ligne.qte }}</td>
+                                <td>
+                                    {% if ligne.livre.prix is defined %}
+                                        {{ (ligne.livre.prix * ligne.qte)|format_currency('TND') }}
+                                    {% else %}
+                                        <span class="text-muted">Total non disponible</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                            <td><strong>{{ commande.total|format_currency('TND') }}</strong></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            {% if commande.livraison %}
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">Adresse de livraison</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                {% if commande.livraison.nom is defined %}{{ commande.livraison.nom }}{% endif %}
+                                {% if commande.livraison.prenom is defined %} {{ commande.livraison.prenom }}{% endif %}<br>
+                                {% if commande.livraison.adresse is defined %}{{ commande.livraison.adresse }}<br>{% endif %}
+                                {% if commande.livraison.codePostal is defined %}{{ commande.livraison.codePostal }}{% endif %}
+                                {% if commande.livraison.ville is defined %}{{ commande.livraison.ville }}{% endif %}<br>
+                                {% if commande.livraison.pays is defined %}{{ commande.livraison.pays }}{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if commande.paiement %}
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="card-title mb-0">Informations de paiement</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                <strong>Méthode:</strong>
+                                {% if commande.paiement.methode is defined %}
+                                    {{ commande.paiement.methode }}
+                                {% else %}
+                                    Paiement en ligne
+                                {% endif %}
+                                <br>
+
+                                <strong>Date:</strong>
+                                {% if commande.paiement.date is defined %}
+                                    {{ commande.paiement.date|date('d/m/Y H:i') }}
+                                {% else %}
+                                    {{ commande.date|date('d/m/Y') }}
+                                {% endif %}
+                                <br>
+
+                                <strong>Montant:</strong> {{ commande.total|format_currency('TND') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

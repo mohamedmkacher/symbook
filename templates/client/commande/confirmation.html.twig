@@ -1,0 +1,115 @@
+{% extends 'client/base_client.html.twig' %}
+
+{% block client_title %}Confirmation de commande{% endblock %}
+
+{% block client_body %}
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-clipboard-check me-2"></i>Confirmation de commande</h1>
+            <a href="{{ path('app_client_commande_paiement') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i> Retour au paiement
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Détails de la commande</h5>
+                        <span class="text-muted">{{ numero_commande }}</span>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="mb-3">Articles commandés</h6>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Prix</th>
+                                    <th>Quantité</th>
+                                    <th>Sous-total</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for item in items %}
+                                    <tr>
+                                        <td>{{ item.livre.titre }}</td>
+                                        <td>{{ item.livre.prix }}</td>
+                                        <td>{{ item.qte }}</td>
+                                        <td>{{ item.livre.prix * item.qte }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <hr>
+
+                        <h6 class="mb-3">Informations de livraison</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="text-muted mb-1">Adresse</p>
+                                <p>Jean Dupont<br>
+                                    123 rue de Paris<br>
+                                    75001 Paris, France</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="text-muted mb-1">Méthode de livraison</p>
+                                <p>Livraison standard<br>
+                                    Livraison estimée: 3-5 jours ouvrés</p>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <h6 class="mb-3">Mode de paiement</h6>
+                        <p>
+                            {% if mode_paiement == 'carte' %}
+                                Carte bancaire
+                            {% elseif mode_paiement == 'paypal' %}
+                                PayPal
+                            {% elseif mode_paiement == 'virement' %}
+                                Virement bancaire
+                            {% endif %}
+                        </p>
+
+                        <div class="alert alert-info mt-4">
+                            <i class="fas fa-info-circle me-2"></i> Vous recevrez un email avec les informations de suivi dès que votre commande sera expédiée.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Récapitulatif</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Sous-total</span>
+                            <span>{{ total }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Frais de livraison</span>
+                            <span>0.00</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>Total</strong>
+                            <strong>{{ total }}</strong>
+                        </div>
+
+                        <form method="post" action="{{ path('app_client_commande_confirmation') }}" class="mt-4">
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check-circle me-2"></i> Confirmer la commande
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

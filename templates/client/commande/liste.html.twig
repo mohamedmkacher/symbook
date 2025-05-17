@@ -1,0 +1,55 @@
+{% extends 'client/base_client.html.twig' %}
+
+{% block client_title %}Mes commandes - Symbook{% endblock %}
+{% block client_body %}
+
+    <div class="container py-5">
+        <h1 class="mb-4">Mes commandes</h1>
+
+        {% if commandes|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Numéro</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Informations</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for commande in commandes %}
+                        <tr>
+                            <td>#{{ commande.id }}</td>
+                            <td>{{ commande.date|date('d/m/Y') }}</td>
+                            <td>{{ commande.total|format_currency('TND') }}</td>
+                            <td>
+                                {% if commande.paiement %}
+                                    <span class="badge bg-success">Payée</span>
+                                {% else %}
+                                    <span class="badge bg-warning">En attente de paiement</span>
+                                {% endif %}
+
+                                {% if commande.livraison %}
+                                    <span class="badge bg-info">Livraison configurée</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ path('app_client_commande_details', {'id': commande.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> Détails
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> Vous n'avez pas encore passé de commande.
+                <a href="{{ path('app_client_livre_index') }}" class="alert-link">Parcourir les livres</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
