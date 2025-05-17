@@ -1,0 +1,112 @@
+{% extends 'client/base_client.html.twig' %}
+
+{% block client_title %}Choisir un mode de paiement{% endblock %}
+
+{% block client_body %}
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-credit-card me-2"></i>Choisir un mode de paiement</h1>
+            <a href="{{ path('app_client_commande_index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i> Retour aux informations
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Mode de paiement</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{{ path('app_client_commande_paiement') }}">
+                            <div class="mb-4">
+                                <div class="form-check mb-3 p-3 border rounded">
+                                    <input class="form-check-input" type="radio" name="mode_paiement" id="carte" value="carte" checked>
+                                    <label class="form-check-label w-100" for="carte">
+                                        <strong>Carte bancaire</strong>
+                                    </label>
+
+                                    <div class="mt-3 ps-4">
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <label for="card-number" class="form-label">Numéro de carte</label>
+                                                <input type="text" class="form-control" id="card-number" placeholder="1234 5678 9012 3456">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label for="expiry" class="form-label">Date d'expiration</label>
+                                                <input type="text" class="form-control" id="expiry" placeholder="MM/AA">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="cvv" class="form-label">CVV</label>
+                                                <input type="text" class="form-control" id="cvv" placeholder="123">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-check mb-3 p-3 border rounded">
+                                    <input class="form-check-input" type="radio" name="mode_paiement" id="paypal" value="paypal">
+                                    <label class="form-check-label w-100" for="paypal">
+                                        <strong>PayPal</strong>
+                                        <p class="text-muted small mt-1">Vous serez redirigé vers PayPal pour finaliser votre paiement.</p>
+                                    </label>
+                                </div>
+
+                                <div class="form-check mb-3 p-3 border rounded">
+                                    <input class="form-check-input" type="radio" name="mode_paiement" id="virement" value="virement">
+                                    <label class="form-check-label w-100" for="virement">
+                                        <strong>Virement bancaire</strong>
+                                        <p class="text-muted small mt-1">Les détails du virement vous seront communiqués par email après validation de votre commande.</p>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-check me-2"></i> Confirmer et payer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Récapitulatif</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6>Articles ({{ items|length }})</h6>
+                            <ul class="list-unstyled">
+                                {% for item in items %}
+                                    <li class="mb-2">
+                                        {{ item.livre.titre }} <span class="text-muted">x {{ item.qte }}</span>
+                                        <span class="float-end">{{ item.livre.prix * item.qte }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Sous-total</span>
+                            <span>{{ total }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Frais de livraison</span>
+                            <span>0.00</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>Total</strong>
+                            <strong>{{ total }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

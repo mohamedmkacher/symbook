@@ -1,0 +1,14 @@
+
+
+{% block body %}
+    <h1>Réinitialiser votre mot de passe</h1>
+
+    {% for flash in app.flashes('reset_password_error') %}
+        <div class="alert alert-danger">{{ flash }}</div>
+    {% endfor %}
+
+    {{ form_start(resetForm) }}
+    {{ form_row(resetForm.plainPassword) }}
+    <button class="btn btn-primary">Enregistrer</button>
+    {{ form_end(resetForm) }}
+{% endblock %}

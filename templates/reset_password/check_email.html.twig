@@ -1,0 +1,109 @@
+
+
+{% block stylesheets %}
+    <style>
+        /* Reprenez les mêmes styles que votre interface de login */
+        :root {
+            --primary: #9333ea;
+            --primary-dark: #7e22ce;
+            --primary-light: #c084fc;
+            --dark: #0f172a;
+            --dark-soft: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --success: #10b981;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-radius: 0.5rem;
+            --border-radius-lg: 0.75rem;
+        }
+
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--dark);
+            padding: 2rem;
+        }
+
+        .auth-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-radius: var(--border-radius-lg);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.75rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--gray-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-message {
+            color: var(--gray-light);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .auth-link {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .auth-link:hover {
+            color: var(--light);
+            text-decoration: underline;
+        }
+
+        .auth-note {
+            font-size: 0.75rem;
+            color: var(--gray);
+            text-align: center;
+            margin-top: 2rem;
+            font-style: italic;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="auth-title">Email envoyé</h1>
+
+            <p class="auth-message">
+                Si un compte correspondant à votre adresse email existe, un email contenant un lien pour réinitialiser votre mot de passe vient d'être envoyé.
+                Ce lien expirera dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+            </p>
+
+            <p class="auth-message">
+                Si vous ne recevez pas d'email, vérifiez votre dossier spam ou <a href="{{ path('app_forgot_password_request') }}" class="auth-link">essayez à nouveau</a>.
+            </p>
+
+            <a href="{{ path('app_login') }}" class="auth-link">Retour à la page de connexion</a>
+
+            <p class="auth-note">
+                (Cette page est affichée même si l'adresse email n'existe pas pour ne pas révéler quelles adresses sont enregistrées dans notre système.)
+            </p>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'client/base_client.html.twig' %}
+
+{% block client_title %}Commande #{{ commande.id }}{% endblock %}
+
+{% block client_body %}
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-receipt me-2"></i>Commande #{{ commande.id }}</h1>
+            <a href="{{ path('app_client_commande_index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Retour
+            </a>
+        </div>
+
+        <div class="row">
+            <!-- Informations de la commande -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-info-circle me-2"></i> Informations
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-4">Date</dt>
+                            <dd class="col-sm-8">{{ commande.date|date('d/m/Y H:i') }}</dd>
+
+                            <dt class="col-sm-4">Statut</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge bg-secondary">Terminée</span>
+                            </dd>
+
+                            <dt class="col-sm-4">Total</dt>
+                            <dd class="col-sm-8">{{ commande.total|format_currency('EUR') }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Adresse de livraison -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-truck me-2"></i> Livraison
+                    </div>
+                    <div class="card-body">
+                        <address>
+                            {{ commande.panier.user.email }}<br>
+                            <!-- Ajoutez ici les champs d'adresse si vous en avez -->
+                            Adresse à compléter dans l'entité User
+                        </address>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Détails des articles -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-book me-2"></i> Articles commandés
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Livre</th>
+                            <th>Prix unitaire</th>
+                            <th>Quantité</th>
+                            <th>Total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for ligne in commande.panier.lignesPanier %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ asset('uploads/livres/' ~ ligne.livre.image) }}"
+                                             alt="{{ ligne.livre.titre }}"
+                                             width="50" class="me-3 rounded">
+                                        <div>
+                                            <h6 class="mb-0">{{ ligne.livre.titre }}</h6>
+                                            <small class="text-muted">{{ ligne.livre.categorie.libelle }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ ligne.livre.prix|format_currency('EUR') }}</td>
+                                <td>{{ ligne.qte }}</td>
+                                <td>{{ (ligne.livre.prix * ligne.qte)|format_currency('EUR') }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th colspan="3" class="text-end">Total</th>
+                            <th>{{ commande.total|format_currency('EUR') }}</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton de réassurance -->
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <h4 class="text-success mb-3">
+                    <i class="fas fa-check-circle me-2"></i>Commande confirmée
+                </h4>
+                <p class="mb-0">
+                    Merci pour votre achat ! Votre commande a bien été enregistrée.
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
